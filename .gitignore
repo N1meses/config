@@ -1,0 +1,20 @@
+# Nix build results
+/result*
+
+# Python build artifacts and virtual environments
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+activate/
+   
+ #IDE/Editor config
+ .idea/
+ .vscode/
+  
+ #Custom ignores for your project
+ /home/nimeses/self_packages/
+ /modules/user/bash/keys/
+ /modules/user/wallpaper/
+modules/user/bash/keys
