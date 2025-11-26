@@ -8,13 +8,12 @@ __pycache__/
 venv/
 env/
 activate/
-   
- #IDE/Editor config
- .idea/
- .vscode/
-  
- #Custom ignores for your project
- /home/nimeses/self_packages/
- /modules/user/bash/keys/
- /modules/user/wallpaper/
+
+#IDE/Editor config
+.idea/
+.vscode/
+
+#Custom ignores for your project
+/home/nimeses/self_packages/
+/modules/user/wallpaper/
 modules/user/bash/keys
