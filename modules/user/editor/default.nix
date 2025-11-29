@@ -111,10 +111,26 @@
 			tabstop = 2;
 			expandtab = true;
 			clipboard = "unnamedplus"; # Use system clipboard
+			completeopt = ["menu" "menuone" "noselect"];
 		};
 
 		# Enable plugins
 		plugins = {
+
+			# UI improvements
+			lspkind = {
+				enable = true;
+        settings.cmp = {
+					enable = true;
+					menu = {
+						nvim_lsp = "[LSP]";
+						luasnip = "[snip]";
+						buffer = "[buf]";
+						path = "[path]";
+					};
+				};
+			};
+			fidget.enable = true; # LSP progress notifications
 
 			# File explorer
 			neo-tree = {
@@ -142,7 +158,7 @@
 				enable = true;
 				servers = {
 					# Add servers for languages you use
-					nil_ls.enable = true;    # Nix
+					nixd.enable = true;      # Nix
 					bashls.enable = true;    # Bash
 					pyright.enable = true;   # Python
 					rust_analyzer = {
@@ -154,7 +170,40 @@
 			};
 
 			# Auto-completion
-			cmp.enable = true;
+			cmp = {
+				enable = true;
+				autoEnableSources = true;
+				settings = {
+					snippet.expand = ''
+						function(args)
+							require('luasnip').lsp_expand(args.body)
+						end
+					'';
+
+					mapping = {
+						"<C-Space>" = "cmp.mapping.complete()";
+						"<C-d>" = "cmp.mapping.scroll_docs(-4)";
+						"<C-f>" = "cmp.mapping.scroll_docs(4)";
+						"<C-e>" = "cmp.mapping.close()";
+						"<CR>" = "cmp.mapping.confirm({ select = true })";
+						"<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
+						"<S-Tab>" = "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
+					};
+
+					sources = [
+						{ name = "nvim_lsp"; }
+						{ name = "luasnip"; }
+						{ name = "buffer"; }
+						{ name = "path"; }
+					];
+				};
+			};
+
+			# Snippet engine (required for cmp)
+			luasnip.enable = true;
+
+			# Autopairs
+			nvim-autopairs.enable = true;
 		};
 
 		# Keymaps

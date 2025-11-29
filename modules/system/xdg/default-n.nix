@@ -1,12 +1,10 @@
 {config, pkgs, lib, ...}:
 {
   options.my.system.xdg.portal = {
-    enable = lib.mkEnableOption "Enable Portals for Wayland compositor";
+    enable = lib.mkEnableOption "Enable Protals for Wayland comositor";
   };
 
   config = lib.mkIf config.my.system.xdg.portal.enable {
-    environment.pathsToLink = [ "/share/applications" "/share/xdg-desktop-portal" ];
-
     xdg.portal = {
       enable = config.my.system.xdg.portal.enable;
 

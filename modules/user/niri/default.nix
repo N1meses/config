@@ -44,6 +44,8 @@ in {
         GDK_BACKEND = "wayland,x11";
         QT_QPA_PLATFORM = "wayland";
         DISPLAY = ":0";
+        QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+        SDL_VIDEODRIVER="wayland";
       };
 
       prefer-no-csd = true;
@@ -136,6 +138,7 @@ in {
       overview.workspace-shadow.enable = false;
 
       input = {
+        keyboard.xkb.layout = "de";
         focus-follows-mouse.enable = true;
         touchpad = {
           natural-scroll = true;

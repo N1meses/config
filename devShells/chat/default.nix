@@ -3,7 +3,7 @@ pkgs.mkShell {
   name = "chat with GPT";
 
   packages = with pkgs;[
-      python313Full
+      python313
       uv
     ];
 

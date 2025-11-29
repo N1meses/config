@@ -1,24 +1,40 @@
-{pkgs, ...}:
-{
-  programs.virt-manager.enable = true;
-  
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-      swtpm.enable = true;  # <--- Keep this! This is needed for TPM 2.0
+{config, lib, pkgs, ...}:
+let 
+  msv = config.my.system.virtualisation;
+in{
+  options.my.system.virtualisation = {
+    enable = lib.mkEnableOption "virtualisation support for libvirt and virt-manager";
+
+    virtManager = {
+      enable = lib.mkEnableOption "virt-manager gui";
+    };
+
+    TPM.enable = lib.mkEnableOption "Enable TPM 2.0 support";
+
+    qemuPackage = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.qemu_kvm;
+      description = "QEMU package to use";
     };
   };
 
-  users.users.nimeses.extraGroups = [
-    "libvirtd"
-    "kvm"
-  ];
+  config = lib.mkIf msv.enable {
+    
+    virtualisation.libvirtd = {
+      enable = true;
+      qemu = {
+        package = msv.qemuPackage;
+        runAsRoot = true;
+        swtpm.enable = msv.TPM.enable;
+      };
+    };
 
-  environment.systemPackages = with pkgs; [
-    qemu_kvm
-    virt-manager
-  ];
-
+    users.users.${config.my.system.host.userName}.extraGroups = ["libvirtd" "kvm"];
+    
+    programs.virt-manager.enable = msv.virtManager.enable;
+    
+    environment.systemPackages = with pkgs; [
+      qemu_kvm
+    ] ++ lib.optional msv.virtManager.enable virt-manager;
+  }; 
 }

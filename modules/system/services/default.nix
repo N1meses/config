@@ -1,59 +1,85 @@
-{pkgs, ...}:
-{
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    settings = {
-      General = {
+{config, lib, pkgs, ...}:
+let 
+  mss = config.my.system.services;
+in {
+
+  options.my.system.services = {
+
+    enable = lib.mkEnableOption "Enable system services";
+
+    bluetooth.enable = lib.mkEnableOption "Bluetooth support";
+
+    audio.enable = lib.mkEnableOption "PipeWire audio system";
+
+    mysql.enable = lib.mkEnableOption "MySQL/MariaDB database";
+
+    tailscale.enable = lib.mkEnableOption "Tailscale VPN";
+
+    power.enable = lib.mkEnableOption "power managment services";
+
+    displayManager.enable = lib.mkEnableOption "greetd display Manager with tuigreet";
+
+    gnomeKeyring.enable = lib.mkEnableOption "GNOME Keyring";
+
+    udisks.enable = lib.mkEnableOption "disk managment services";
+
+    xserver.enable = lib.mkEnableOption "Xserver for compatibility";
+  };
+
+  config = lib.mkIf mss.enable {
+    hardware.bluetooth = lib.mkIf config.my.system.services.bluetooth.enable {
+      enable = true;
+      powerOnBoot = true;
+      settings.General = {
         Enable = "Source,Sink,Media,Socket";
         Experimental = true;
       };
     };
-  };
 
-  services = {
-    blueman.enable = true;
+    services = {
+      blueman.enable = config.my.system.services.bluetooth.enable;
 
-    pulseaudio.enable = false;
+      pulseaudio.enable = false;
+      pipewire = lib.mkIf config.my.system.services.audio.enable {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        wireplumber.enable = true;
+      };
 
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-      wireplumber.enable = true;  # Session manager for PipeWire, needed for screencasting
-    };
+      mysql = lib.mkIf config.my.system.services.mysql.enable {
+        enable = true;
+        package = pkgs.mariadb;
+      };
 
-    mysql = {
-      enable = true;
-      package = pkgs.mariadb;
-    };
+      tailscale.enable = config.my.system.services.tailscale.enable;
 
-    tailscale.enable = true;
+      power-profiles-daemon.enable = config.my.system.services.power.enable;
 
-    power-profiles-daemon.enable =true;
+      upower.enable = config.my.system.services.power.enable;
 
-    upower.enable = true;
+      greetd = lib.mkIf config.my.system.services.displayManager.enable {
+        enable = true;
+        settings = {
+          default_session = {
+            command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd Hyprland";
+            user = "greeter";
+          };
+        };
+      };
 
-    displayManager.sddm = {
-      enable = true;
-      wayland.enable = true;
-      theme = "catppuccin-mocha";
-    };
+      gnome.gnome-keyring.enable = config.my.system.services.gnomeKeyring.enable;
 
-    gnome.gnome-keyring.enable = true;
+      udisks2.enable = config.my.system.services.udisks.enable;
 
-    udisks2.enable = true;
-
-    xserver = {
-      enable = true;
-
-      videoDrivers = [ "modesetting" ];
-
-      xkb = {
-        # Configure keymap in X11
-        layout = "de";
-        variant = "";
+      xserver = lib.mkIf config.my.system.services.xserver.enable {
+        enable = true;
+        videoDrivers = [ "modesetting" ];
+        xkb = {
+          layout = "de";
+          variant = "";
+        };
       };
     };
   };
