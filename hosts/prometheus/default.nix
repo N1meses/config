@@ -18,8 +18,8 @@
   config = {
     my.system = {
         host = {
-          userName = "yahweh";
-          hostName = "yahweh";
+          userName = "prometheus";
+          hostName = "prometheus";
         };
 
         boot.enable = true;
@@ -27,10 +27,10 @@
         xdg.portal.enable = true;
     };
 
-    users.users.yahweh = {
+    users.users.prometheus = {
       isNormalUser = true;
       description = "Yahweh";
-      home = "/home/yahweh";
+      home = "/home/prometheus";
       extraGroups = [ "networkmanager" "wheel"];
       shell = pkgs.bashInteractive;
     };

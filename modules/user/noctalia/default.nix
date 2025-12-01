@@ -128,7 +128,7 @@
         generateTemplatesForPredefined = true;
         manualSunrise = "06:30";
         manualSunset = "18:30";
-        matugenSchemeType = "scheme-content";
+        matugenSchemeType = "scheme-neutral";
         predefinedScheme = "Noctalia (default)";
         schedulingMode = "off";
         useWallpaperColors = true;

@@ -160,7 +160,13 @@
 					# Add servers for languages you use
 					nixd.enable = true;      # Nix
 					bashls.enable = true;    # Bash
-					pyright.enable = true;   # Python
+					pyright = {
+						enable = true;
+						settings = {
+						  pyright.disableOrganizeImports = true; # Let Ruff handle imports
+						};
+					};
+					ruff.enable = true;      # Python linting/formatting
 					rust_analyzer = {
 						enable = true; # Rust
 						installCargo = true;
@@ -205,6 +211,15 @@
 			# Autopairs
 			nvim-autopairs.enable = true;
 		};
+
+		# Auto-formatting
+		autoCmd = [
+			{
+				event = "BufWritePre";
+				pattern = "*.py";
+				command = "lua vim.lsp.buf.format({ name = 'ruff', async = false })";
+			}
+		];
 
 		# Keymaps
 		keymaps = [

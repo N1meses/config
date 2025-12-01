@@ -14,8 +14,8 @@
 	];
 
 	home = {
-		username = "yahweh";
-		homeDirectory = "/home/yahweh";
+		username = "prometheus";
+		homeDirectory = "/home/prometheus";
 		stateVersion = "25.05";
 
 		sessionVariables = {

@@ -60,7 +60,7 @@
       };
 
     in {
-      nixosConfigurations = nixpkgs.lib.genAttrs ["nimeses" "yahweh" "hephaistos"](hostName:
+      nixosConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"](hostName:
       nixpkgs.lib.nixosSystem{
         inherit system pkgs;
 
@@ -94,7 +94,7 @@
         specialArgs = {inherit quickshell inputs;};
       });
 
-      homeConfigurations = nixpkgs.lib.genAttrs ["nimeses" "yahweh" "hephaistos"] (hostName:
+      homeConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"] (hostName:
       home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
