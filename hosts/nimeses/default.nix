@@ -13,6 +13,7 @@
     ../../modules/system/virtualisation
     ../../modules/system/host
     ../../modules/system/niri
+    ../../modules/system/shell
   ];
   
   config = {
@@ -29,6 +30,8 @@
       localization.enable = true;
 
       security.enable = true;
+
+      shell.enable = true;
       
       networking = {
         enable = true;
@@ -72,7 +75,6 @@
       description = "Nimeses";
       home = "/home/nimeses";
       extraGroups = [ "networkmanager" "wheel"];
-      shell = pkgs.bashInteractive;
     };
 
     environment = {

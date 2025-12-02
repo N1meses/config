@@ -205,7 +205,7 @@
       general = {
         animationDisabled = false;
         animationSpeed = 1.5;
-        avatarImage = "/home/nimeses/.face";
+        avatarImage = "/home/nimeses/nixconfig/modules/user/icon/hunter.jpeg";
         compactLockScreen = false;
         dimDesktop = true;
         enableShadows = false;

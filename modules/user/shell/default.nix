@@ -118,6 +118,18 @@ in {
         default = true;
         description = "Enable zsh autocompletion";
       };
+
+      enableAutosuggestions = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable zsh autosuggestions (greyed out suggestions)";
+      };
+
+      enableSyntaxHighlighting = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable zsh syntax highlighting";
+      };
     };
   };
   
@@ -144,10 +156,12 @@ in {
         enable = true;
 
         enableCompletion = mus.zsh.enableCompletion;
+        autosuggestion.enable = mus.zsh.enableAutosuggestions;
+        syntaxHighlighting.enable = mus.zsh.enableSyntaxHighlighting;
 
         shellAliases = mergedAliases;
 
-        initExtra = 
+        initContent =
           ''
             # show fastfetch only in interactive terminals
             [[ $- == *i* ]] && command -v fastfetch >/dev/null && fastfetch
