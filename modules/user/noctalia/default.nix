@@ -34,8 +34,8 @@
         density = "default";
         exclusive = true;
         floating = true;
-        marginHorizontal = 0.37;
-        marginVertical = 0.45;
+        marginHorizontal = 0.4;
+        marginVertical = 0.5;
         monitors = [];
         outerCorners = false;
         position = "left";
