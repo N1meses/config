@@ -1,5 +1,4 @@
-{pkgs, ... }:{
-
+{pkgs, ...}: {
   imports = [
     ./hardware-configuration.nix
     ../../modules/system/boot
@@ -15,10 +14,10 @@
     ../../modules/system/niri
     ../../modules/system/shell
   ];
-  
+
   config = {
     nix.package = pkgs.nix;
-    
+
     my.system = {
       host = {
         userName = "nimeses";
@@ -32,23 +31,23 @@
       security.enable = true;
 
       shell.enable = true;
-      
+
       networking = {
         enable = true;
         firewall.trustedInterfaces = ["tailscale0"];
       };
 
       services = {
-          enable = true;
-          bluetooth.enable = true;
-          audio.enable = true;
-          mysql.enable = true;
-          tailscale.enable = true;
-          power.enable = true;
-          displayManager.enable = true;
-          gnomeKeyring.enable = true;
-          udisks.enable = true;
-          xserver.enable = false;
+        enable = true;
+        bluetooth.enable = true;
+        audio.enable = true;
+        mysql.enable = true;
+        tailscale.enable = true;
+        power.enable = true;
+        displayManager.enable = true;
+        gnomeKeyring.enable = true;
+        udisks.enable = true;
+        xserver.enable = false;
       };
 
       virtualisation = {
@@ -74,13 +73,13 @@
       isNormalUser = true;
       description = "Nimeses";
       home = "/home/nimeses";
-      extraGroups = [ "networkmanager" "wheel"];
+      extraGroups = ["networkmanager" "wheel"];
     };
 
     environment = {
       variables.QT_QPA_PLATFORMTHEME = "qt6ct";
-            
-      systemPackages = with pkgs;[
+
+      systemPackages = with pkgs; [
         brave
         ntfs3g
         git
@@ -89,7 +88,7 @@
         wget
       ];
     };
-    
+
     system.stateVersion = "25.05";
   };
 }

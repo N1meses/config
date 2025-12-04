@@ -1,121 +1,221 @@
 {
-  # Nox Default Theme for Helix
-  # Ported from VSCode Nox Theme by Agamjot-Singh
-  # https://marketplace.visualstudio.com/items?itemName=Agamjot-Singh.nox-theme
+  # Nox Default Theme for Helix - Fixed scope formatting
+  # Ported from VSCode Nox Theme by Agamjot-Singh v1.0.4
 
   nox-default = {
-    # UI Elements
-    "ui.background" = { bg = "#0d0d0d"; };
-    "ui.text" = { fg = "#d4d4d4"; };
-    "ui.text.focus" = { fg = "#ffffff"; };
-    "ui.text.info" = { fg = "#cccccc"; };
-    "ui.virtual" = { fg = "#404040"; };
-    "ui.virtual.indent-guide" = { fg = "#404040"; };
-    "ui.virtual.whitespace" = { fg = "#e3e4e229"; };
+    # SYNTAX HIGHLIGHTING - All keys quoted like dark_plus
+    "attribute" = "cyan";
+    "comment" = "green";
+    "comment.block" = "green";
+    "comment.line" = "green";
+    "comment.block.documentation" = "doc_green";
 
-    "ui.cursor" = { bg = "#aeafad"; fg = "#0d0d0d"; };
-    "ui.cursor.primary" = { bg = "#aeafad"; fg = "#0d0d0d"; };
-    "ui.cursor.match" = { bg = "#515c6a"; fg = "#ffffff"; };
+    "constant" = "blue";
+    "constant.builtin" = "blue";
+    "constant.builtin.boolean" = "blue";
+    "constant.character" = "orange";
+    "constant.character.escape" = "red";
+    "constant.numeric" = "pale_green";
+    "constant.numeric.integer" = "pale_green";
+    "constant.numeric.float" = "pale_green";
 
-    "ui.selection" = { bg = "#264f78"; };
-    "ui.selection.primary" = { bg = "#264f78"; };
-    "ui.highlight" = { bg = "#2a2d2e"; };
+    "string" = "orange";
+    "string.regexp" = "red";
+    "string.special" = "blue";
+    "string.special.symbol" = "blue";
+    "string.special.path" = "orange";
+    "string.special.uri" = "cyan";
 
-    "ui.linenr" = { fg = "#858585"; };
-    "ui.linenr.selected" = { fg = "#c6c6c6"; };
+    "keyword" = "blue";
+    "keyword.control" = "blue";
+    "keyword.control.conditional" = "blue";
+    "keyword.control.repeat" = "blue";
+    "keyword.control.import" = "blue";
+    "keyword.control.return" = "blue";
+    "keyword.control.exception" = "blue";
+    "keyword.directive" = "gray";
+    "keyword.function" = "blue";
+    "keyword.operator" = "light_gray";
+    "keyword.storage" = "blue";
+    "keyword.storage.type" = "blue";
+    "keyword.storage.modifier" = "blue";
 
-    "ui.statusline" = { fg = "#ffffff"; bg = "#040404"; };
-    "ui.statusline.inactive" = { fg = "#cccccc99"; bg = "#3c3c3c99"; };
-    "ui.statusline.normal" = { fg = "#ffffff"; bg = "#040404"; };
-    "ui.statusline.insert" = { fg = "#ffffff"; bg = "#0e4d77"; };
-    "ui.statusline.select" = { fg = "#ffffff"; bg = "#16825d"; };
+    "operator" = "light_gray";
 
-    "ui.popup" = { fg = "#cccccc"; bg = "#1b1b1b"; };
-    "ui.popup.info" = { fg = "#d4d4d4"; bg = "#1b1b1b"; };
-    "ui.window" = { fg = "#5F5F5F"; };
-    "ui.help" = { fg = "#cccccc"; bg = "#1b1b1b"; };
+    "function" = "yellow";
+    "function.builtin" = "yellow";
+    "function.macro" = "purple";
+    "function.method" = "yellow";
+    "function.special" = "yellow";
 
-    "ui.menu" = { fg = "#cccccc"; bg = "#1b1b1b"; };
-    "ui.menu.selected" = { fg = "#ffffff"; bg = "#062e49"; };
-    "ui.menu.scroll" = { fg = "#79797966"; bg = "#1b1b1b"; };
+    "variable" = "cyan";
+    "variable.builtin" = "blue";
+    "variable.parameter" = "cyan";
+    "variable.other" = "cyan";
+    "variable.other.member" = "cyan";
 
-    # Diagnostic
-    "error" = { fg = "#f48771"; };
-    "warning" = { fg = "#cca700"; };
-    "info" = { fg = "#75beff"; };
-    "hint" = { fg = "#999999"; };
+    "type" = "type_cyan";
+    "type.builtin" = "type_cyan";
+    "type.enum" = "type_cyan";
+    "type.enum.variant" = "light_green";
 
-    "diagnostic.error" = { underline = { style = "curl"; color = "#f48771"; }; };
-    "diagnostic.warning" = { underline = { style = "curl"; color = "#cca700"; }; };
-    "diagnostic.info" = { underline = { style = "curl"; color = "#75beff"; }; };
-    "diagnostic.hint" = { underline = { style = "curl"; color = "#999999"; }; };
+    "constructor" = "type_cyan";
 
-    # Syntax Highlighting
-    "comment" = { fg = "#57A64A"; };
-    "comment.block" = { fg = "#57A64A"; };
-    "comment.line" = { fg = "#57A64A"; };
-    "comment.block.documentation" = { fg = "#6A9955"; };
+    "label" = "light_gray2";
+    "namespace" = "light_gray2";
+    "module" = "light_gray2";
 
-    "constant" = { fg = "#569cd6"; };
-    "constant.builtin" = { fg = "#569cd6"; };
-    "constant.character" = { fg = "#D69D85"; };
-    "constant.character.escape" = { fg = "#d16969"; };
-    "constant.numeric" = { fg = "#b5cea8"; };
+    "property" = "cyan";
 
-    "string" = { fg = "#D69D85"; };
-    "string.regexp" = { fg = "#d16969"; };
-    "string.special" = { fg = "#569cd6"; };
+    "tag" = "blue";
+    "tag.builtin" = "blue";
+    "special" = "purple";
+    "punctuation" = "text";
+    "punctuation.bracket" = "text";
+    "punctuation.delimiter" = "text";
+    "punctuation.special" = "blue";
 
-    "keyword" = { fg = "#569cd6"; };
-    "keyword.control" = { fg = "#569cd6"; };
-    "keyword.control.import" = { fg = "#569cd6"; };
-    "keyword.directive" = { fg = "#9B9B9B"; };
-    "keyword.function" = { fg = "#569cd6"; };
-    "keyword.operator" = { fg = "#B4B4B4"; };
-    "keyword.storage" = { fg = "#569cd6"; };
-    "keyword.storage.type" = { fg = "#569cd6"; };
-    "keyword.storage.modifier" = { fg = "#569cd6"; };
-
-    "operator" = { fg = "#B4B4B4"; };
-
-    "function" = { fg = "#C8C8C8"; };
-    "function.builtin" = { fg = "#C8C8C8"; };
-    "function.macro" = { fg = "#BD63C5"; };
-    "function.method" = { fg = "#C8C8C8"; };
-
-    "variable" = { fg = "#C8C8C8"; };
-    "variable.builtin" = { fg = "#569cd6"; };
-    "variable.parameter" = { fg = "#7F7F7F"; };
-    "variable.other.member" = { fg = "#DADADA"; };
-
-    "type" = { fg = "#4EC9B0"; };
-    "type.builtin" = { fg = "#4EC9B0"; };
-    "type.enum.variant" = { fg = "#B8D7A3"; };
-
-    "constructor" = { fg = "#4EC9B0"; };
-
-    "label" = { fg = "#C8C8C8"; };
-    "namespace" = { fg = "#C8C8C8"; };
-
-    "attribute" = { fg = "#9cdcfe"; };
-    "property" = { fg = "#9cdcfe"; };
-
-    "tag" = { fg = "#569cd6"; };
-    "special" = { fg = "#BD63C5"; };
-
-    # Markup (Markdown, etc.)
-    "markup.heading" = { fg = "#569cd6"; modifiers = ["bold"]; };
-    "markup.bold" = { fg = "#569cd6"; modifiers = ["bold"]; };
+    # MARKUP
+    "markup.heading" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.heading.1" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.heading.2" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.heading.3" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.heading.4" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.heading.5" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.heading.6" = { fg = "blue"; modifiers = ["bold"]; };
+    "markup.bold" = { fg = "blue"; modifiers = ["bold"]; };
     "markup.italic" = { modifiers = ["italic"]; };
-    "markup.link.url" = { fg = "#3890d1"; underline = { style = "line"; }; };
-    "markup.link.text" = { fg = "#9cdcfe"; };
-    "markup.quote" = { fg = "#6A9955"; };
-    "markup.raw" = { fg = "#D69D85"; };
-    "markup.list" = { fg = "#6796e6"; };
+    "markup.strikethrough" = { modifiers = ["crossed_out"]; };
+    "markup.link.url" = { fg = "link_blue"; underline = { style = "line"; }; };
+    "markup.link.text" = "cyan";
+    "markup.link.label" = "cyan";
+    "markup.quote" = "doc_green";
+    "markup.raw" = "orange";
+    "markup.raw.block" = "orange";
+    "markup.raw.inline" = "orange";
+    "markup.list" = "list_blue";
+    "markup.list.numbered" = "list_blue";
+    "markup.list.unnumbered" = "list_blue";
 
-    # Diff
-    "diff.plus" = { fg = "#81b88b"; };
-    "diff.minus" = { fg = "#c74e39"; };
-    "diff.delta" = { fg = "#e2c08d"; };
+    # DIFF
+    "diff.plus" = "diff_green";
+    "diff.minus" = "diff_red";
+    "diff.delta" = "diff_yellow";
+    "diff.plus.gutter" = "diff_green";
+    "diff.minus.gutter" = "diff_red";
+    "diff.delta.gutter" = "diff_yellow";
+
+    # UI ELEMENTS
+    "ui.background" = { bg = "background"; };
+    "ui.text" = { fg = "text"; };
+    "ui.text.focus" = { fg = "white"; };
+    "ui.text.info" = { fg = "text_gray"; };
+    "ui.virtual" = { fg = "virtual_text"; };
+    "ui.virtual.indent-guide" = { fg = "virtual_text"; };
+    "ui.virtual.whitespace" = { fg = "whitespace"; };
+    "ui.virtual.inlay-hint" = { fg = "hint_gray"; };
+
+    "ui.cursor" = { bg = "cursor"; fg = "background"; };
+    "ui.cursor.primary" = { bg = "cursor"; fg = "background"; };
+    "ui.cursor.match" = { bg = "cursor_match"; fg = "cursor_match_fg"; };
+
+    "ui.selection" = { bg = "selection"; };
+    "ui.selection.primary" = { bg = "selection"; };
+    "ui.highlight" = { bg = "highlight"; };
+
+    "ui.linenr" = { fg = "linenr"; };
+    "ui.linenr.selected" = { fg = "linenr_selected"; };
+
+    "ui.statusline" = { fg = "white"; bg = "statusline_bg"; };
+    "ui.statusline.inactive" = { fg = "statusline_inactive_fg"; bg = "statusline_inactive_bg"; };
+    "ui.statusline.normal" = { fg = "white"; bg = "statusline_bg"; };
+    "ui.statusline.insert" = { fg = "white"; bg = "statusline_insert"; };
+    "ui.statusline.select" = { fg = "white"; bg = "statusline_select"; };
+
+    "ui.popup" = { fg = "text_gray"; bg = "popup_bg"; };
+    "ui.popup.info" = { fg = "text"; bg = "popup_bg"; };
+    "ui.window" = { fg = "window_border"; };
+    "ui.help" = { fg = "text_gray"; bg = "popup_bg"; };
+
+    "ui.menu" = { fg = "text"; bg = "popup_bg"; };
+    "ui.menu.selected" = { fg = "white"; bg = "menu_selected"; };
+    "ui.menu.scroll" = { fg = "scroll"; bg = "popup_bg"; };
+
+    # DIAGNOSTICS
+    "error" = "error";
+    "warning" = "warning";
+    "info" = "info";
+    "hint" = "hint_gray";
+
+    "diagnostic.error" = { underline = { style = "curl"; color = "error"; }; };
+    "diagnostic.warning" = { underline = { style = "curl"; color = "warning"; }; };
+    "diagnostic.info" = { underline = { style = "curl"; color = "info"; }; };
+    "diagnostic.hint" = { underline = { style = "curl"; color = "hint_gray"; }; };
+    "diagnostic.unnecessary" = { modifiers = ["dim"]; };
+    "diagnostic.deprecated" = { modifiers = ["crossed_out"]; };
+
+    # PALETTE
+    palette = {
+      # Main colors
+      white = "#ffffff";
+      text = "#d4d4d4";
+      text_gray = "#cccccc";
+      background = "#0d0d0d";
+
+      # Syntax colors
+      green = "#57A64A";
+      doc_green = "#6A9955";
+      blue = "#569cd6";
+      cyan = "#9cdcfe";
+      type_cyan = "#4EC9B0";
+      yellow = "#DCDCAA";
+      orange = "#D69D85";
+      red = "#d16969";
+      purple = "#BD63C5";
+      pale_green = "#b5cea8";
+      light_green = "#B8D7A3";
+      gray = "#9B9B9B";
+      light_gray = "#B4B4B4";
+      light_gray2 = "#C8C8C8";
+      light_gray3 = "#DADADA";
+      dark_gray = "#7F7F7F";
+      link_blue = "#3890d1";
+      list_blue = "#6796e6";
+
+      # Diff colors
+      diff_green = "#81b88b";
+      diff_red = "#c74e39";
+      diff_yellow = "#e2c08d";
+
+      # UI colors
+      cursor = "#aeafad";
+      cursor_match = "#515c6a";
+      cursor_match_fg = "#74879f";
+      selection = "#264f78";
+      highlight = "#2a2d2e";
+      linenr = "#858585";
+      linenr_selected = "#c6c6c6";
+      virtual_text = "#404040";
+      whitespace = "#e3e4e229";
+
+      # Statusline colors
+      statusline_bg = "#040404";
+      statusline_inactive_fg = "#cccccc99";
+      statusline_inactive_bg = "#3c3c3c99";
+      statusline_insert = "#0e4d77";
+      statusline_select = "#16825d";
+
+      # Popup/Menu colors
+      popup_bg = "#1b1b1b";
+      menu_selected = "#062e49";
+      window_border = "#5F5F5F";
+      scroll = "#79797966";
+
+      # Diagnostic colors
+      error = "#f48771";
+      warning = "#cca700";
+      info = "#75beff";
+      hint_gray = "#999999";
+    };
   };
 }

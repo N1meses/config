@@ -16,6 +16,8 @@ in {
         editor = {
           line-number = "relative";
           mouse = true;
+          clipboard-provider = "wayland";
+          default-yank-register = "+";
           cursor-shape = {
             insert = "bar";
             normal = "block";

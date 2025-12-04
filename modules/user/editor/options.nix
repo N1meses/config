@@ -1,4 +1,4 @@
-{config, lib, ...}:
+{lib, ...}:
 {
   options.my.user.editor = {
     enable = lib.mkEnableOption "enable editor configuration";

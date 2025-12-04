@@ -1,10 +1,12 @@
-{config, lib, pkgs, ...}:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   mss = config.my.system.services;
 in {
-
   options.my.system.services = {
-
     enable = lib.mkEnableOption "Enable system services";
 
     bluetooth.enable = lib.mkEnableOption "Bluetooth support";
@@ -75,7 +77,7 @@ in {
 
       xserver = lib.mkIf config.my.system.services.xserver.enable {
         enable = true;
-        videoDrivers = [ "modesetting" ];
+        videoDrivers = ["modesetting"];
         xkb = {
           layout = "de";
           variant = "";

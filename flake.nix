@@ -1,9 +1,7 @@
-
 {
   description = "nix-flake: system config and home manager";
 
   inputs = {
-
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
@@ -23,7 +21,7 @@
 
     niri = {
       url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs"; 
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     quickshell = {
@@ -47,23 +45,30 @@
     };
   };
 
-  outputs = inputs@{nixpkgs, home-manager,  hyprland, quickshell, noctalia, niri, nixvim, nix-index-database, ...}:
-    let
-      system = "x86_64-linux";
+  outputs = inputs @ {
+    nixpkgs,
+    home-manager,
+    hyprland,
+    quickshell,
+    noctalia,
+    niri,
+    nixvim,
+    nix-index-database,
+    ...
+  }: let
+    system = "x86_64-linux";
 
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = [
-          niri.overlays.niri
-        ];
-      };
-
-    in {
-      nixosConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"](hostName:
-      nixpkgs.lib.nixosSystem{
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+      overlays = [
+        niri.overlays.niri
+      ];
+    };
+  in {
+    nixosConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"] (hostName:
+      nixpkgs.lib.nixosSystem {
         inherit system pkgs;
-
         modules = [
           ./hosts/${hostName}/default.nix
           home-manager.nixosModules.home-manager
@@ -72,11 +77,11 @@
             environment.systemPackages = [
               home-manager.packages.${system}.home-manager
             ];
-            
+
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.${hostName}= {
-              imports =  [
+            home-manager.users.${hostName} = {
+              imports = [
                 niri.homeModules.niri
                 nixvim.homeModules.nixvim
                 nix-index-database.homeModules.nix-index
@@ -87,50 +92,48 @@
                 ./hosts/${hostName}/${hostName}.nix
               ];
             };
-            home-manager.extraSpecialArgs = { inherit quickshell inputs; };
+            home-manager.extraSpecialArgs = {inherit quickshell inputs;};
           }
-
         ];
         specialArgs = {inherit quickshell inputs;};
       });
 
-      homeConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"] (hostName:
+    homeConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"] (hostName:
       home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
-            niri.homeModules.niri
-            nixvim.homeModules.nixvim
-             nix-index-database.homeModules.nix-index
-            {
-              programs.nix-index-database.comma.enable = true;
-              programs.command-not-found.enable = false;
-            }
-            ./hosts/${hostName}/${hostName}.nix
-          ];
+          niri.homeModules.niri
+          nixvim.homeModules.nixvim
+          nix-index-database.homeModules.nix-index
+          {
+            programs.nix-index-database.comma.enable = true;
+            programs.command-not-found.enable = false;
+          }
+          ./hosts/${hostName}/${hostName}.nix
+        ];
         extraSpecialArgs = {inherit quickshell inputs;};
       });
 
-      devShells.${system} = {
-
-        python = import ./devShells/python {
-            inherit pkgs;
-          };
-
-        java = import ./devShells/java {
-            inherit pkgs;
-          };
-
-        stock-analysis = import ./devShells/stock_analysis {
-            inherit pkgs;
-          };
-
-        chat = import ./devShells/chat{
-          inherit pkgs;
-        };
-        
-        django = import ./devShells/django{
-          inherit pkgs;
-        };
+    devShells.${system} = {
+      python = import ./devShells/python {
+        inherit pkgs;
       };
+
+      java = import ./devShells/java {
+        inherit pkgs;
+      };
+
+      stock-analysis = import ./devShells/stock_analysis {
+        inherit pkgs;
+      };
+
+      chat = import ./devShells/chat {
+        inherit pkgs;
+      };
+
+      django = import ./devShells/django {
+        inherit pkgs;
+      };
+    };
   };
 }

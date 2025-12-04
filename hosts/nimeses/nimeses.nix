@@ -1,20 +1,17 @@
-{pkgs, ... }:
-{
+{pkgs, ...}: {
+  imports = [
+    ../../modules/user/shell
+    ../../modules/user/editor
+    ../../modules/user/preferences
+    ../../modules/user/hyprland
+    ../../modules/user/noctalia
+    ../../modules/user/niri
+    ../../modules/user/dotfiles
+    ../../modules/user/services
+    ../../modules/user/starship
+  ];
 
-	imports = [
-		../../modules/user/shell
-		../../modules/user/editor
-		../../modules/user/preferences
-		../../modules/user/hyprland
-		../../modules/user/noctalia
-		../../modules/user/niri
-		../../modules/user/dotfiles
-		../../modules/user/services
-		../../modules/user/starship
-	];
-
-
-  config = { 
+  config = {
     home = {
       username = "nimeses";
       homeDirectory = "/home/nimeses";
@@ -30,7 +27,6 @@
       };
 
       packages = with pkgs; [
-
         dbus
         wayland-utils
         hyprland-qtutils
@@ -109,11 +105,14 @@
 
       editor = {
         enable = true;
-        defaultEditor = "nvim"; # or "code", "helix", "vi", "nano"
+        defaultEditor = "helix";
 
         vscode.enable = true;
         nixvim.enable = true;
-        helix.enable = true;
+        helix = {
+          enable = true;
+          theme = "nox-default";
+        };
         vi.enable = false;
 
         lsp = {
@@ -129,6 +128,15 @@
           markdown.enable = false;
         };
         tools.enable = true;
+      };
+
+      services = {
+        enable = true;
+        gnomeKeyring.enable = true;
+        clipboard.wl-clip-persist.enable = true;
+        security.gpg-agent.enable = true;
+        storage.udiskie.enable = true;
+        development.direnv.enable = true;
       };
     };
   };
