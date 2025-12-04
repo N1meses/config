@@ -30,7 +30,7 @@
       };
 
       bar = {
-        backgroundOpacity = 0.8;
+        backgroundOpacity = 0.955555;
         density = "default";
         exclusive = true;
         floating = true;

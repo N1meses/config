@@ -106,7 +106,30 @@
 
     my.user = {
       shell.enable = true;
-      
+
+      editor = {
+        enable = true;
+        defaultEditor = "nvim"; # or "code", "helix", "vi", "nano"
+
+        vscode.enable = true;
+        nixvim.enable = true;
+        helix.enable = true;
+        vi.enable = false;
+
+        lsp = {
+          nix.enable = true;
+          bash.enable = true;
+          python.enable = true;
+          rust.enable = false;
+          javascript.enable = false;
+          go.enable = false;
+          java.enable = false;
+          c.enable = false;
+          yaml.enable = false;
+          markdown.enable = false;
+        };
+        tools.enable = true;
+      };
     };
   };
 }
