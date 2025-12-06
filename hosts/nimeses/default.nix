@@ -60,13 +60,13 @@
 
       niri.enable = true;
 
+      xdg.portal.enable = true;
+
       settings = {
         enable = true;
         nix-ld.enable = true;
         garbageCollector.enable = true;
       };
-
-      xdg.portal.enable = true;
     };
 
     users.users.nimeses = {
@@ -80,11 +80,8 @@
       variables.QT_QPA_PLATFORMTHEME = "qt6ct";
 
       systemPackages = with pkgs; [
-        brave
         ntfs3g
         git
-        networkmanager
-        pipewire
         wget
       ];
     };

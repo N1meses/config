@@ -30,7 +30,6 @@
         dbus
         wayland-utils
         hyprland-qtutils
-        xdg-desktop-portal-termfilechooser
 
         #cli
         fastfetch
@@ -41,26 +40,19 @@
         claude-code
         cbonsai
         croc
-        tmux
         ghostty
         gemini-cli
-        zoxide
         trash-cli
         parted
         imv
-        wl-clipboard
         grim
         swappy
         wf-recorder
-        pay-respects
         todo
         nh
         nom
         nvd
         nix-tree
-        eza
-        lazygit
-        zellij
         starship
         tldr
 
@@ -101,7 +93,14 @@
     };
 
     my.user = {
-      shell.enable = true;
+      shell = {
+        enable = true;
+        zoxide.enable = true;
+        eza.enable = true;
+        lazygit.enable = true;
+        zellij.enable = false;
+        payRespects.enable = false;
+      };
 
       editor = {
         enable = true;

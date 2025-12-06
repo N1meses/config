@@ -40,6 +40,13 @@ in {
           (lib.mkIf mue.lsp.nix.enable {
             nixd = {
               command = "${pkgs.nixd}/bin/nixd";
+              config.nixd = {
+                formatting.command = ["${pkgs.alejandra}/bin/alejandra"];
+                options = {
+                  nixos.expr = "(builtins.getFlake \"/home/nimeses/nixconfig\").nixosConfigurations.nimeses.options";
+                  home-manager.expr = "(builtins.getFlake \"/home/nimeses/nixconfig\").homeConfigurations.nimeses.options";
+                };
+              };
             };
           })
           (lib.mkIf mue.lsp.bash.enable {
@@ -51,11 +58,25 @@ in {
           (lib.mkIf mue.lsp.python.enable {
             pylsp = {
               command = "${pkgs.python3Packages.python-lsp-server}/bin/pylsp";
+              config.pylsp = {
+                plugins = {
+                  ruff.enabled = true;
+                  pycodestyle.enabled = false;  # ruff handles this
+                  pyflakes.enabled = false;     # ruff handles this
+                  autopep8.enabled = false;     # use ruff
+                  yapf.enabled = false;         # use ruff
+                };
+              };
             };
           })
           (lib.mkIf mue.lsp.rust.enable {
             rust-analyzer = {
               command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
+              config.rust-analyzer = {
+                check.command = "clippy";  # Use clippy instead of check
+                cargo.loadOutDirsFromCheck = true;
+                procMacro.enable = true;
+              };
             };
           })
           (lib.mkIf mue.lsp.go.enable {
@@ -71,6 +92,12 @@ in {
           (lib.mkIf mue.lsp.c.enable {
             clangd = {
               command = "${pkgs.clang-tools}/bin/clangd";
+              args = [
+                "--background-index"
+                "--clang-tidy"
+                "--completion-style=detailed"
+                "--header-insertion=iwyu"
+              ];
             };
           })
           (lib.mkIf mue.lsp.yaml.enable {
@@ -89,6 +116,13 @@ in {
             typescript-language-server = {
               command = "${pkgs.typescript-language-server}/bin/typescript-language-server";
               args = ["--stdio"];
+              config.typescript = {
+                inlayHints = {
+                  includeInlayParameterNameHints = "all";
+                  includeInlayFunctionParameterTypeHints = true;
+                  includeInlayVariableTypeHints = true;
+                };
+              };
             };
           })
           mue.helix.extraLanguages
@@ -100,6 +134,7 @@ in {
             auto-format = true;
             formatter.command = "${pkgs.alejandra}/bin/alejandra";
             language-servers = lib.optional mue.lsp.nix.enable "nixd";
+            roots = ["flake.nix" "flake.lock" ".git"];
           }
           {
             name = "bash";
@@ -110,11 +145,13 @@ in {
             name = "python";
             auto-format = true;
             language-servers = lib.optional mue.lsp.python.enable "pylsp";
+            roots = ["pyproject.toml" "setup.py" "requirements.txt" ".git"];
           }
           {
             name = "rust";
             auto-format = true;
             language-servers = lib.optional mue.lsp.rust.enable "rust-analyzer";
+            roots = ["Cargo.toml" "Cargo.lock" ".git"];
           }
           {
             name = "go";

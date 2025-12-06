@@ -29,7 +29,7 @@ in {
   };
 
   config = lib.mkIf mss.enable {
-    hardware.bluetooth = lib.mkIf config.my.system.services.bluetooth.enable {
+    hardware.bluetooth = lib.mkIf config.mss.bluetooth.enable {
       enable = true;
       powerOnBoot = true;
       settings.General = {
@@ -38,11 +38,17 @@ in {
       };
     };
 
+    environment.systemPackages = with pkgs;
+      []
+      ++ lib.optional mss.tailscale.enable tailscale
+      ++ lib.optional mss.audio.enable pipewire;
+
     services = {
-      blueman.enable = config.my.system.services.bluetooth.enable;
+      blueman.enable = config.mss.bluetooth.enable;
 
       pulseaudio.enable = false;
-      pipewire = lib.mkIf config.my.system.services.audio.enable {
+
+      pipewire = lib.mkIf config.mss.audio.enable {
         enable = true;
         alsa.enable = true;
         alsa.support32Bit = true;
@@ -50,18 +56,18 @@ in {
         wireplumber.enable = true;
       };
 
-      mysql = lib.mkIf config.my.system.services.mysql.enable {
+      mysql = lib.mkIf config.mss.mysql.enable {
         enable = true;
         package = pkgs.mariadb;
       };
 
-      tailscale.enable = config.my.system.services.tailscale.enable;
+      tailscale.enable = config.mss.tailscale.enable;
 
-      power-profiles-daemon.enable = config.my.system.services.power.enable;
+      power-profiles-daemon.enable = config.mss.power.enable;
 
-      upower.enable = config.my.system.services.power.enable;
+      upower.enable = config.mss.power.enable;
 
-      greetd = lib.mkIf config.my.system.services.displayManager.enable {
+      greetd = lib.mkIf config.mss.displayManager.enable {
         enable = true;
         settings = {
           default_session = {
@@ -71,11 +77,11 @@ in {
         };
       };
 
-      gnome.gnome-keyring.enable = config.my.system.services.gnomeKeyring.enable;
+      gnome.gnome-keyring.enable = config.mss.gnomeKeyring.enable;
 
-      udisks2.enable = config.my.system.services.udisks.enable;
+      udisks2.enable = config.mss.udisks.enable;
 
-      xserver = lib.mkIf config.my.system.services.xserver.enable {
+      xserver = lib.mkIf config.mss.xserver.enable {
         enable = true;
         videoDrivers = ["modesetting"];
         xkb = {

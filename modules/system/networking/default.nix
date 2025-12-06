@@ -1,5 +1,9 @@
-{config, lib, ...}:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   mys = config.my.system.networking;
 in {
   options.my.system.networking = {
@@ -14,7 +18,6 @@ in {
     };
 
     firewall = {
-
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
@@ -38,5 +41,8 @@ in {
         trustedInterfaces = mys.firewall.trustedInterfaces;
       };
     };
+    environment.systemPackages = with pkgs;
+      []
+      ++ lib.optional mys.networkManager.enable networkmanager;
   };
 }

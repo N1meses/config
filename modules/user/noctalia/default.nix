@@ -1,5 +1,4 @@
-{inputs, ...}:
-{
+{inputs, ...}: {
   imports = [
     inputs.noctalia.homeModules.default
   ];
@@ -54,7 +53,7 @@
             }
           ];
           left = [
-           {
+            {
               customIconPath = "/home/nimeses/nixconfig/modules/user/icon/nixos.png";
               icon = "NixOS";
               id = "ControlCenter";
@@ -66,7 +65,7 @@
             {
               id = "TaskbarGrouped";
             }
-         ];
+          ];
           right = [
             {
               id = "WallpaperSelector";
@@ -294,7 +293,7 @@
         gtk = true;
         qt = true;
         ghostty = true;
-        
+
         #set to false
         alacritty = false;
         code = false;
@@ -328,8 +327,8 @@
       };
 
       wallpaper = {
-        defaultWallpaper = "/home/nimeses/nixconfig/modules/user/wallpaper/1402431.png";
-        directory = "/home/nimeses/nixconfig/modules/user/wallpaper";  # Added!
+        defaultWallpaper = "/home/nimeses/nixconfig/modules/user/wallpaper/wallhaven_exkqk8.jpg";
+        directory = "/home/nimeses/nixconfig/modules/user/wallpaper"; # Added!
         enableMultiMonitorDirectories = false;
         enabled = true;
         fillColor = "#000000";

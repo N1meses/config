@@ -1,10 +1,10 @@
-{config, lib, pkgs,...}:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   mus = config.my.user.shell;
-  hasEza = builtins.elem pkgs.eza config.home.packages;
-  hasZellij = builtins.elem pkgs.zellij config.home.packages;
-  hasPayRespects = builtins.elem pkgs.pay-respects config.home.packages;
-  hasLazyGit = builtins.elem pkgs.lazygit config.home.packages;
 
   defaultAliases = {
     # NixOS management with nh (replaces nixos-rebuild & home-manager)
@@ -13,8 +13,8 @@ let
     # snr = "nh os switch";             # NixOS switch with visual output /doesnt work currently
     snr = "sudo nixos-rebuild switch --flake /home/nimeses/nixconfig#nimeses";
     snr-up = "nh os switch --update"; # Update flake inputs and rebuild
-    snr-ask = "nh os switch --ask";   # Show diff before applying
-    clean = "nh clean all --keep 5";  # Garbage collect, keep 5 generations
+    snr-ask = "nh os switch --ask"; # Show diff before applying
+    clean = "nh clean all --keep 5"; # Garbage collect, keep 5 generations
 
     # Navigation
     cd-nixos = "cd /home/nimeses/nixconfig";
@@ -35,47 +35,48 @@ let
     re = "exec $SHELL -l";
   };
 
-  nixhelpersAliases = {   
+  nixhelpersAliases = {
     # Build monitoring and diffs
-    nb = "nom build";                                          # Build with visual output
-    diff = "nvd diff /run/booted-system /run/current-system";  # See what changed
-    diff-gen = "nvd diff";                                     # Compare any two generations
-    
+    nb = "nom build"; # Build with visual output
+    diff = "nvd diff /run/booted-system /run/current-system"; # See what changed
+    diff-gen = "nvd diff"; # Compare any two generations
+
     # Dependency exploration
-    tree-sys = "nix-tree /nix/var/nix/profiles/system";    # Explore system dependencies
-    tree-home = "nix-tree";                                 # Explore home profile
-    tree-pkg = "nix-tree nixpkgs#";                         # Explore package (append name)
+    tree-sys = "nix-tree /nix/var/nix/profiles/system"; # Explore system dependencies
+    tree-home = "nix-tree"; # Explore home profile
+    tree-pkg = "nix-tree nixpkgs#"; # Explore package (append name)
   };
 
-  ezaAliases = lib.optionalAttrs hasEza {  
+  ezaAliases = lib.optionalAttrs mus.eza.enable {
     # File listing (eza)
     ls = "eza --icons=auto --git";
     ll = "eza -l --icons=auto --git --header";
     la = "eza -la --icons=auto --git --header";
     lt = "eza --tree --level=2 --icons=auto";
     lt3 = "eza --tree --level=3 --icons=auto";
-    llm = "eza -l --sort=modified --icons=auto --git";     # Sort by modified time
-    lls = "eza -l --sort=size --icons=auto --git";         # Sort by size
+    llm = "eza -l --sort=modified --icons=auto --git"; # Sort by modified time
+    lls = "eza -l --sort=size --icons=auto --git"; # Sort by size
   };
-  
-  lazyGitAliases = lib.optionalAttrs hasLazyGit {
+
+  lazyGitAliases = lib.optionalAttrs mus.lazygit.enable {
     # Git workflow
-    lg = "lazygit";                                         # Visual git interface
+    lg = "lazygit"; # Visual git interface
   };
 
-  zellijAliases = lib.optionalAttrs hasZellij {  
+  zellijAliases = lib.optionalAttrs mus.zellij.enable {
     # Terminal multiplexing
-    zj = "zellij";                                          # Start zellij
-    zj-attach = "zellij attach";                            # Attach to session
-    zj-list = "zellij list-sessions";                       # List sessions
-  };    
+    zj = "zellij"; # Start zellij
+    zj-attach = "zellij attach"; # Attach to session
+    zj-list = "zellij list-sessions"; # List sessions
+  };
 
-   payRespectsAliases = lib.optionalAttrs hasPayRespects { 
+  payRespectsAliases = lib.optionalAttrs mus.payRespects.enable {
     # Utilities
     f = "eval \"$(pay-respects bash)\"";
   };
 
-  mergedAliases = defaultAliases 
+  mergedAliases =
+    defaultAliases
     // mus.shellAliases
     // ezaAliases
     // nixhelpersAliases
@@ -92,12 +93,16 @@ in {
       description = "Which shell to use (zsh or bash)";
     };
 
-    zoxide.enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Enable Zoxide integration";
-    };
-      
+    zoxide.enable = lib.mkEnableOption "Enable Zoxide integration";
+
+    eza.enable = lib.mkEnableOption "eza file listing tool";
+
+    zellij.enable = lib.mkEnableOption "zellij terminal multiplexer";
+
+    payRespects.enable = lib.mkEnableOption "pay-respects (fuck replacement)";
+
+    lazygit.enable = lib.mkEnableOption "lazygit TUI";
+
     shellAliases = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       default = {};
@@ -132,46 +137,51 @@ in {
       };
     };
   };
-  
+
   config = lib.mkIf mus.enable {
+    home.packages = with pkgs;
+      []
+      ++ lib.optional mus.eza.enable eza
+      ++ lib.optional mus.zellij.enable zellij
+      ++ lib.optional mus.payRespects.enable pay-respects
+      ++ lib.optional mus.lazygit.enable lazygit
+      ++ lib.optional mus.zoxide.enable zoxide;
 
     programs.bash = lib.mkIf (mus.shellType == "bash") {
       enable = true;
 
       enableCompletion = mus.bash.enableCompletion;
 
-      profileExtra = ''[ -f ~/.bashrc ] && . ~/.bashrc''; 
+      profileExtra = ''[ -f ~/.bashrc ] && . ~/.bashrc'';
 
-      bashrcExtra =
-        ''
+      bashrcExtra = ''
         # show fastfetch only in interactive terminals
         case $- in
         *i*) command -v fastfetch >/dev/null && fastfetch ;;
         esac
-        '';
+      '';
       shellAliases = mergedAliases;
     };
 
     programs.zsh = lib.mkIf (mus.shellType == "zsh") {
-        enable = true;
+      enable = true;
 
-        enableCompletion = mus.zsh.enableCompletion;
-        autosuggestion.enable = mus.zsh.enableAutosuggestions;
-        syntaxHighlighting.enable = mus.zsh.enableSyntaxHighlighting;
+      enableCompletion = mus.zsh.enableCompletion;
+      autosuggestion.enable = mus.zsh.enableAutosuggestions;
+      syntaxHighlighting.enable = mus.zsh.enableSyntaxHighlighting;
 
-        shellAliases = mergedAliases;
+      shellAliases = mergedAliases;
 
-        initContent =
-          ''
-            # show fastfetch only in interactive terminals
-            [[ $- == *i* ]] && command -v fastfetch >/dev/null && fastfetch
-          '';
-      };
-
-      programs.zoxide = lib.mkIf mus.zoxide.enable {
-        enable = true;
-        enableBashIntegration = (mus.shellType == "bash");
-        enableZshIntegration = (mus.shellType == "zsh");
-      };
+      initContent = ''
+        # show fastfetch only in interactive terminals
+        [[ $- == *i* ]] && command -v fastfetch >/dev/null && fastfetch
+      '';
     };
-  }
+
+    programs.zoxide = lib.mkIf mus.zoxide.enable {
+      enable = true;
+      enableBashIntegration = mus.shellType == "bash";
+      enableZshIntegration = mus.shellType == "zsh";
+    };
+  };
+}

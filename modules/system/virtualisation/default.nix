@@ -1,7 +1,11 @@
-{config, lib, pkgs, ...}:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   msv = config.my.system.virtualisation;
-in{
+in {
   options.my.system.virtualisation = {
     enable = lib.mkEnableOption "virtualisation support for libvirt and virt-manager";
 
@@ -19,7 +23,6 @@ in{
   };
 
   config = lib.mkIf msv.enable {
-    
     virtualisation.libvirtd = {
       enable = true;
       qemu = {
@@ -30,11 +33,11 @@ in{
     };
 
     users.users.${config.my.system.host.userName}.extraGroups = ["libvirtd" "kvm"];
-    
+
     programs.virt-manager.enable = msv.virtManager.enable;
-    
-    environment.systemPackages = with pkgs; [
-      qemu_kvm
-    ] ++ lib.optional msv.virtManager.enable virt-manager;
-  }; 
+
+    environment.systemPackages = with pkgs;
+      []
+      ++ lib.optional msv.virtManager.enable virt-manager
+  };
 }

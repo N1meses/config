@@ -55,8 +55,13 @@ in {
   };
 
   config = lib.mkIf mus.enable {
+    home.packages = with pkgs;
+      []
+      ++ lib.optional mus.clipboard.wl-clip-persist.enable wl-clipboard;
+
     services = {
       gnome-keyring.enable = mus.gnomeKeyring.enable;
+
       wl-clip-persist.enable = mus.clipboard.wl-clip-persist.enable;
 
       # GPG Agent
