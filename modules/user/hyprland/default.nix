@@ -1,5 +1,8 @@
-{ pkgs, inputs, ...}:
-let
+{
+  pkgs,
+  inputs,
+  ...
+}: let
   # --- Workspace Bindings (1-9) ---
   workspace_binds = [
     "SUPER,1,workspace,1"
@@ -26,8 +29,8 @@ let
   # --- Window Management (Vim-style HJKL, matching Niri) ---
   window_binds = [
     "SUPER,Q,killactive"
-    "SUPER,F,fullscreen,1"  # Maximize window (like Niri's maximize-window-to-edges)
-    "SUPER,Space,fullscreen,0"  # Fullscreen (like Niri's maximize-column)
+    "SUPER,F,fullscreen,0" # Maximize window (like Niri's maximize-window-to-edges)
+    "SUPER,Space,fullscreen,1" # Fullscreen (like Niri's maximize-column)
     "SUPER,ESC,exit"
 
     # Focus (matching Niri)
@@ -52,7 +55,7 @@ let
   # --- App Launching ---
   launching_binds = [
     "SUPER,Return,exec, ghostty" # Updated to Ghostty
-    "SUPER,E,exec, ghostty -e yazi"     # Updated to Nautilus (per Niri config)
+    "SUPER,E,exec, ghostty -e yazi" # Updated to Nautilus (per Niri config)
   ];
 
   # --- Noctalia Integration ---
@@ -62,20 +65,18 @@ let
     ", XF86AudioMute, exec, noctalia-shell ipc call volume muteOutput"
     ", XF86MonBrightnessUp, exec, noctalia-shell ipc call brightness increase"
     ", XF86MonBrightnessDown, exec, noctalia-shell ipc call brightness decrease"
-    
+
     "SUPER, S, exec, noctalia-shell ipc call lockScreen lock"
     "SUPER, M, exec, noctalia-shell ipc call launcher toggle"
     "SUPER, B, exec, noctalia-shell ipc call bar toggle"
   ];
-
-in
-{
+in {
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
 
     settings = {
-      monitor = ["eDP-1,2880x1920@120,0x0,1.6" ];
+      monitor = ["eDP-1,2880x1920@120,0x0,1.6"];
 
       env = [
         "NIXOS_OZONE_WL,1"
@@ -103,11 +104,11 @@ in
         gaps_in = 4;
         gaps_out = 8;
         border_size = 2;
-        
-        # Emerald Green (Active) / Grey (Inactive) 
-        "col.active_border" = "rgb(50C878)"; 
+
+        # Emerald Green (Active) / Grey (Inactive)
+        "col.active_border" = "rgb(50C878)";
         "col.inactive_border" = "rgb(595959)";
-        
+
         resize_on_border = true;
       };
 
@@ -157,9 +158,9 @@ in
       # --- Cursor (Matching Niri) ---
       cursor = {
         hide_on_touch = true;
-        inactive_timeout = 3;  # Hide after 3 seconds like Niri
+        inactive_timeout = 3; # Hide after 3 seconds like Niri
       };
-      
+
       debug = {
         disable_logs = false;
       };
@@ -185,9 +186,10 @@ in
         # Ghostty: 0.95 focused, 0.90 unfocused (matching Niri)
         "opacity 0.95 0.90, match:class ^com\\.mitchellh\\.ghostty$"
       ];
-      
+
       # --- Keybind List ---
-      bind = []
+      bind =
+        []
         ++ window_binds
         ++ workspace_binds
         ++ launching_binds

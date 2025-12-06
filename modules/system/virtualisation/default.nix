@@ -38,6 +38,6 @@ in {
 
     environment.systemPackages = with pkgs;
       []
-      ++ lib.optional msv.virtManager.enable virt-manager
+      ++ lib.optional msv.virtManager.enable virt-manager;
   };
 }

@@ -29,7 +29,7 @@ in {
   };
 
   config = lib.mkIf mss.enable {
-    hardware.bluetooth = lib.mkIf config.mss.bluetooth.enable {
+    hardware.bluetooth = lib.mkIf mss.bluetooth.enable {
       enable = true;
       powerOnBoot = true;
       settings.General = {
@@ -44,11 +44,11 @@ in {
       ++ lib.optional mss.audio.enable pipewire;
 
     services = {
-      blueman.enable = config.mss.bluetooth.enable;
+      blueman.enable = mss.bluetooth.enable;
 
       pulseaudio.enable = false;
 
-      pipewire = lib.mkIf config.mss.audio.enable {
+      pipewire = lib.mkIf mss.audio.enable {
         enable = true;
         alsa.enable = true;
         alsa.support32Bit = true;
@@ -56,18 +56,18 @@ in {
         wireplumber.enable = true;
       };
 
-      mysql = lib.mkIf config.mss.mysql.enable {
+      mysql = lib.mkIf mss.mysql.enable {
         enable = true;
         package = pkgs.mariadb;
       };
 
-      tailscale.enable = config.mss.tailscale.enable;
+      tailscale.enable = mss.tailscale.enable;
 
-      power-profiles-daemon.enable = config.mss.power.enable;
+      power-profiles-daemon.enable = mss.power.enable;
 
-      upower.enable = config.mss.power.enable;
+      upower.enable = mss.power.enable;
 
-      greetd = lib.mkIf config.mss.displayManager.enable {
+      greetd = lib.mkIf mss.displayManager.enable {
         enable = true;
         settings = {
           default_session = {
@@ -77,11 +77,11 @@ in {
         };
       };
 
-      gnome.gnome-keyring.enable = config.mss.gnomeKeyring.enable;
+      gnome.gnome-keyring.enable = mss.gnomeKeyring.enable;
 
-      udisks2.enable = config.mss.udisks.enable;
+      udisks2.enable = mss.udisks.enable;
 
-      xserver = lib.mkIf config.mss.xserver.enable {
+      xserver = lib.mkIf mss.xserver.enable {
         enable = true;
         videoDrivers = ["modesetting"];
         xkb = {
