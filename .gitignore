@@ -15,5 +15,5 @@ activate/
 
 #Custom ignores for your project
 /home/nimeses/self_packages/
-/modules/user/wallpaper/
+/modules/user/wallpaper/*
 modules/user/bash/keys

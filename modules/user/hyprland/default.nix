@@ -1,6 +1,5 @@
 {
   config,
-  osConfig,
   lib,
   pkgs,
   inputs,
@@ -77,6 +76,8 @@
   ];
 in {
   options.my.user.hyprland = {
+    enable = lib.mkEnableOption "Enable user-level Hyprland configuration";
+
     monitor = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       description = "Monitor configuration in hyprland format";
@@ -115,7 +116,7 @@ in {
     };
   };
 
-  config = lib.mkIf osConfig.my.system.hyprland.enable {
+  config = lib.mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
       package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
@@ -137,11 +138,12 @@ in {
         ];
 
         # --- Startup ---
-        exec-once = [
-          "noctalia-shell"
-          "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
-          "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-        ];
+        exec-once =
+          [
+            "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+            "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          ]
+          ++ lib.optional config.my.user.noctalia.enable "noctalia-shell";
 
         general = {
           layout = cfg.settings.layout;
@@ -237,7 +239,7 @@ in {
           ++ window_binds
           ++ workspace_binds
           ++ launching_binds
-          ++ noctalia_binds;
+          ++ lib.optionals config.my.user.noctalia.enable noctalia_binds;
       };
     };
   };

@@ -30,6 +30,7 @@
         dbus
         wayland-utils
         hyprland-qtutils
+        xwayland-satellite
 
         #cli
         fastfetch
@@ -80,6 +81,7 @@
         file-roller
         galculator
         slurp
+        anki
       ];
     };
 
@@ -153,12 +155,44 @@
         gtk.enable = true;
       };
 
+      noctalia.enable = true;
+
       hyprland = {
+        enable = true;
         monitor = ["eDP-1,2880x1920@120,0x0,1.6"];
 
         settings = {
           gapSize = 4;
           borderSize = 2;
+        };
+      };
+
+      niri = {
+        enable = true;
+
+        outputs = {
+          "eDP-1" = {
+            scale = 1.6;
+            variableRefreshRate = true;
+            mode = {
+              width = 2880;
+              height = 1920;
+              refresh = 120.0;
+            };
+          };
+        };
+
+        layout = {
+          gaps = 8;
+          border = {
+            enable = true;
+            width = 2;
+          };
+        };
+
+        input = {
+          touchpad.enable = true;
+          mouse.enable = false;
         };
       };
     };

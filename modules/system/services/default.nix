@@ -17,13 +17,13 @@ in {
 
     tailscale.enable = lib.mkEnableOption "Tailscale VPN";
 
-    power.enable = lib.mkEnableOption "power managment services";
+    power.enable = lib.mkEnableOption "power management services";
 
     displayManager.enable = lib.mkEnableOption "greetd display Manager with tuigreet";
 
     gnomeKeyring.enable = lib.mkEnableOption "GNOME Keyring";
 
-    udisks.enable = lib.mkEnableOption "disk managment services";
+    udisks.enable = lib.mkEnableOption "disk management services";
 
     xserver.enable = lib.mkEnableOption "Xserver for compatibility";
   };
