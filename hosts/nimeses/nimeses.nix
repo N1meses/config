@@ -173,7 +173,7 @@
         outputs = {
           "eDP-1" = {
             scale = 1.6;
-            variableRefreshRate = true;
+            variable-refresh-rate = true;
             mode = {
               width = 2880;
               height = 1920;

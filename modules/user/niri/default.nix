@@ -119,7 +119,7 @@ in {
             description = "scale for the monitor";
           };
 
-          variableRefreshRate = lib.mkEnableOption "enable variable refreshrate";
+          variable-refresh-rate = lib.mkEnableOption "enable variable refreshrate";
 
           mode = lib.mkOption {
             type = lib.types.submodule {
@@ -139,8 +139,6 @@ in {
                   description = "which refresh rate the monitor has";
                 };
               };
-
-              description = "Monitor configuration to use";
             };
           };
         };
