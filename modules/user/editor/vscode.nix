@@ -19,6 +19,7 @@ in {
             ms-python.python
             ms-python.debugpy
             ms-python.black-formatter
+            asvetliakov.vscode-neovim
           ]
           ++ [
             # QML Language Support
@@ -70,6 +71,10 @@ in {
               "*.qml" = "qml";
               "*.qmldir" = "qml";
               "*.js" = "javascript";
+            };
+
+            "extensions.experimental.affinity" = {
+              "asvetliakov.vscode-neovim" = 1;
             };
 
             # QML-specific settings

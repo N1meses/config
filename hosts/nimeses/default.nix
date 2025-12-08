@@ -60,7 +60,10 @@
 
       niri.enable = true;
 
-      xdg.portal.enable = true;
+      xdg.portal = {
+        enable = true;
+        terminal-filechooser.enable = true;
+      };
 
       settings = {
         enable = true;

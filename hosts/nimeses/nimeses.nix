@@ -2,7 +2,7 @@
   imports = [
     ../../modules/user/shell
     ../../modules/user/editor
-    ../../modules/user/preferences
+    ../../modules/user/browser
     ../../modules/user/hyprland
     ../../modules/user/noctalia
     ../../modules/user/niri
@@ -70,7 +70,6 @@
         glib
 
         #applications
-        brave
         jetbrains.idea-ultimate
         jetbrains.pycharm-professional
         jetbrains.datagrip
@@ -136,6 +135,31 @@
         security.gpg-agent.enable = true;
         storage.udiskie.enable = true;
         development.direnv.enable = true;
+      };
+
+      browser = {
+        enable = true;
+        brave.enable = true;
+        defaultBrowser = "brave";
+      };
+
+      dotfiles = {
+        enable = true;
+        home-manager.enable = true;
+        ghostty.enable = true;
+        yazi.enable = true;
+        nh.enable = true;
+        fastfetch.enable = true;
+        gtk.enable = true;
+      };
+
+      hyprland = {
+        monitor = ["eDP-1,2880x1920@120,0x0,1.6"];
+
+        settings = {
+          gapSize = 4;
+          borderSize = 2;
+        };
       };
     };
   };

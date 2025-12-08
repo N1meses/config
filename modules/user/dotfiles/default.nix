@@ -1,167 +1,163 @@
-{pkgs, config, ...}:
 {
-  programs = {
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.my.user.dotfiles;
+in {
+  options.my.user.dotfiles = {
+    enable = lib.mkEnableOption "enable personalized configurations";
 
-    home-manager.enable = true;
+    home-manager.enable = lib.mkEnableOption "enable home-manager";
 
-    ghostty = {
-      enable = true;
-      settings = {
-        config-file = [ "~/.config/ghostty/themes/noctalia" ];
-        font-size = 12;
-        font-family = "IBM Plex Mono";
-      };
-    };
+    ghostty.enable = lib.mkEnableOption "enable configuration of ghostty";
 
-    nh = {
-      enable = true;
-      clean = {
-        enable = true;
-        extraArgs = "--keep-since 7d --keep 5";
-      };
-      flake = "/home/nimeses/nixconfig";
-    };
+    yazi.enable = lib.mkEnableOption "enable custom configuration of yazi";
 
-    chromium = {
-      enable = true;
-      package = pkgs.brave;
-    };
+    nh.enable = lib.mkEnableOption "enable custom options for nix-helper";
 
-    yazi = {
-      enable = true;
-      enableBashIntegration = true;
-      settings = {
-        mgr = {
-          show_hidden = true;
-          sort_by = "natural";
-        };
-        preview = {
-          image_quality = 80;
-          max_width = 10000;
-          max_height = 10000;
-        };
-        tasks = {
-          image_alloc = 536870912;  # 512MB max memory for decoding
-          image_bound = [65535 65535];  # Max image dimensions (u16 limit)
-        };
-      };
-    };
-    
-    fastfetch = {
-      enable = true;
-      settings = {
-        logo = {
-          source = "${config.xdg.configHome}/fastfetch/nixowos.txt";
-          type = "file";
-          padding = {
-            top = 1;
-            left = 2;
-          };
-          color = {
-            "1" = "#5277C3"; # Deep Blue
-            "2" = "#7EBAE4"; # Light Blue
-            "3" = "#DF90AF"; # Pink (The Blush ///)
-            "4" = "#2D789E"; # Darker Blue
-            "5" = "#5F92D3"; # Medium Blue
-          };
-        };
-        modules = [
-          "title"
-          "separator"
-          "os"
-          "host"
-          "kernel"
-          "packages"
-          "shell"
-          "display"
-          "wm"
-          "font"
-          "terminal"
-          "terminalfont"
-          "cpu"
-          "gpu"
-          "memory"
-          "swap"
-          "disk"
-          "localip"
-          "battery"
-          "break"
-          "colors"
-        ];
-      };
-    };
+    fastfetch.enable = lib.mkEnableOption "enable custom fastfetch option";
+
+    gtk.enable = lib.mkEnableOption "enable gtk customization";
   };
 
-  gtk = {
-		enable = true;
-		font = {
-			name = "IBM Plex Sans";
-			size = 10;
-		};
+  config = lib.mkIf cfg.enable {
+    programs = {
+      home-manager.enable = cfg.home-manager.enable;
 
-    theme = {
-      name = "adw-gtk3";
-      package = pkgs.adw-gtk3;
+      ghostty = {
+        enable = cfg.ghostty.enable;
+        settings = {
+          config-file = ["~/.config/ghostty/themes/noctalia"];
+          font-size = 12;
+          font-family = "IBM Plex Mono";
+        };
+      };
+
+      nh = {
+        enable = cfg.nh.enable;
+        clean = {
+          enable = true;
+          extraArgs = "--keep-since 7d --keep 5";
+        };
+        flake = "/home/nimeses/nixconfig";
+      };
+
+      yazi = {
+        enable = cfg.yazi.enable;
+        enableBashIntegration = true;
+        settings = {
+          mgr = {
+            show_hidden = true;
+            sort_by = "natural";
+          };
+          preview = {
+            image_quality = 80;
+            max_width = 10000;
+            max_height = 10000;
+          };
+          tasks = {
+            image_alloc = 536870912; # 512MB max memory for decoding
+            image_bound = [65535 65535]; # Max image dimensions (u16 limit)
+          };
+        };
+      };
+
+      fastfetch = {
+        enable = cfg.fastfetch.enable;
+        settings = {
+          logo = {
+            source = "${config.xdg.configHome}/fastfetch/nixowos.txt";
+            type = "file";
+            padding = {
+              top = 1;
+              left = 2;
+            };
+            color = {
+              "1" = "#5277C3"; # Deep Blue
+              "2" = "#7EBAE4"; # Light Blue
+              "3" = "#DF90AF"; # Pink (The Blush ///)
+              "4" = "#2D789E"; # Darker Blue
+              "5" = "#5F92D3"; # Medium Blue
+            };
+          };
+          modules = [
+            "title"
+            "separator"
+            "os"
+            "host"
+            "kernel"
+            "packages"
+            "shell"
+            "display"
+            "wm"
+            "font"
+            "terminal"
+            "terminalfont"
+            "cpu"
+            "gpu"
+            "memory"
+            "swap"
+            "disk"
+            "localip"
+            "battery"
+            "break"
+            "colors"
+          ];
+        };
+      };
+    };
+    gtk = {
+      enable = cfg.gtk.enable;
+      font = {
+        name = "IBM Plex Sans";
+        size = 10;
+      };
+
+      theme = {
+        name = "adw-gtk3";
+        package = pkgs.adw-gtk3;
+      };
+
+      gtk3.extraConfig = {
+        gtk-application-prefer-dark-theme = 1;
+        extraCss = ''
+          @import "${config.xdg.configHome}/gtk-3.0/colors.css";
+        '';
+      };
+
+      gtk4.extraConfig = {
+        gtk-application-prefer-dark-theme = 1;
+        extraCss = ''
+          @import "${config.xdg.configHome}/gtk-4.0/colors.css";
+        '';
+      };
     };
 
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = 1;
-      extraCss = ''
-        @import "${config.xdg.configHome}/gtk-3.0/colors.css";
+    xdg.configFile = lib.optionalAttrs cfg.fastfetch.enable {
+      "fastfetch/nixowos.txt".text = ''
+        $1           ▗▄▄▄       $2▗▄▄▄▄    ▄▄▄▖
+        $1           ▜███▙       $2▜███▙  ▟███▛
+        $1            ▜███▙       $2▜███▙▟███▛       $1▗
+        $1     ▐▄      ▜███▙       $2▜██████▛    $1▄▄▞▀▛
+        $1      ▜▀▀▀▄▄  ▜█████████▙ $2▜████▛  $1▄█▛▀  ▗▘
+        $1       ▌   ▀█▄▟██████████▙ $2▜███▙$1▟█▛    ▗▞
+        $1       ▐  ▙▖▟$2▙▄▄▖           $2▜████$1▙▄▟▘  ▟▘
+        $1        ▜▖▝█$2███▛             $2▜██▛$1██▄▄▄▞▘
+        $1         ▝$2▟███▛ $4▀▚▄       ▄▞▀ $2▜▛ $1▟███▛
+        $2 ▟███████████▛ $4▗▄▄▞▘     ▝▚▄▄▖  $1▟██████████▙
+        $2 ▜██████████▛  $3/// $4▟▘ ▄ ▝▙ $3/// $1▟███████████▛
+        $2       ▟███▛ $1▟▙    $4▜▄▟▀▙▄▛    $1▟███▛
+        $2      ▟███▛ $1▟██▙             $1▟███▛      $5▄
+        $2     ▟███▛  $1▜███▙           $1▝▀▀▀▀  $5▗▄▛▀▀
+        $2     ▜██▛  ▗▌$1▜███▙ $2▜██████████████████▛
+        $2      ▜▛  ▗▛ $1▟████▙ $2▜████████████████▛
+        $2          ▝▌$1▟██████▙     $5▄▄$2▜███▙
+        $1           ▟███▛▜███▙$2▄▄▟$5▀▘  $2▜███▙
+        $1          ▟███▛$2▄▄$1▜███▙       $2▜███▙
+        $1          ▝▀▀▀    ▀▀▀▀▘       $2▀▀▀▘
       '';
     };
-    
-    gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = 1;
-      extraCss = ''
-        @import "${config.xdg.configHome}/gtk-4.0/colors.css";
-      '';
-    };
-	};
-
-  # Configure xdg-desktop-portal-termfilechooser to use yazi
-  xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
-    [filechooser]
-    cmd=${pkgs.writeShellScript "yazi-filechooser.sh" ''
-      set -e
-      multiple="$1"
-      directory="$2"
-      save="$3"
-      path="$4"
-      out="$5"
-
-      if [ "$save" = "1" ]; then
-        exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" "$path"
-      elif [ "$directory" = "1" ]; then
-        exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" --cwd-file="$out.1" "$path"
-      elif [ "$multiple" = "1" ]; then
-        exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" "$path"
-      else
-        exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" "$path"
-      fi
-    ''}
-  '';
-
-  xdg.configFile."fastfetch/nixowos.txt".text = ''
-$1           ▗▄▄▄       $2▗▄▄▄▄    ▄▄▄▖
-$1           ▜███▙       $2▜███▙  ▟███▛
-$1            ▜███▙       $2▜███▙▟███▛       $1▗
-$1     ▐▄      ▜███▙       $2▜██████▛    $1▄▄▞▀▛
-$1      ▜▀▀▀▄▄  ▜█████████▙ $2▜████▛  $1▄█▛▀  ▗▘
-$1       ▌   ▀█▄▟██████████▙ $2▜███▙$1▟█▛    ▗▞
-$1       ▐  ▙▖▟$2▙▄▄▖           $2▜████$1▙▄▟▘  ▟▘
-$1        ▜▖▝█$2███▛             $2▜██▛$1██▄▄▄▞▘
-$1         ▝$2▟███▛ $4▀▚▄       ▄▞▀ $2▜▛ $1▟███▛
-$2 ▟███████████▛ $4▗▄▄▞▘     ▝▚▄▄▖  $1▟██████████▙
-$2 ▜██████████▛  $3/// $4▟▘ ▄ ▝▙ $3/// $1▟███████████▛
-$2       ▟███▛ $1▟▙    $4▜▄▟▀▙▄▛    $1▟███▛
-$2      ▟███▛ $1▟██▙             $1▟███▛      $5▄
-$2     ▟███▛  $1▜███▙           $1▝▀▀▀▀  $5▗▄▛▀▀
-$2     ▜██▛  ▗▌$1▜███▙ $2▜██████████████████▛
-$2      ▜▛  ▗▛ $1▟████▙ $2▜████████████████▛
-$2          ▝▌$1▟██████▙     $5▄▄$2▜███▙
-$1           ▟███▛▜███▙$2▄▄▟$5▀▘  $2▜███▙
-$1          ▟███▛$2▄▄$1▜███▙       $2▜███▙
-$1          ▝▀▀▀    ▀▀▀▀▘       $2▀▀▀▘
-    '';
+  };
 }
