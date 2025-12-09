@@ -1,31 +1,59 @@
-{config, lib, pkgs, ...}:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   mue = config.my.user.editor;
+  cfg = config.my.user.editor.helix;
   noxTheme = import ./themes/nox-default.nix;
 in {
+  options.my.user.editor.helix = {
+    enable = lib.mkEnableOption "Helix editor";
 
-  config = lib.mkIf mue.helix.enable {
+    theme = lib.mkOption {
+      type = lib.types.str;
+      default = "dark_plus";
+      description = "Helix color theme";
+    };
+
+    extraConfig = lib.mkOption {
+      type = lib.types.attrs;
+      default = {};
+      description = "Additional Helix configuration";
+    };
+
+    extraLanguages = lib.mkOption {
+      type = lib.types.attrs;
+      default = {};
+      description = "Additional language server configurations";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
     programs.helix = {
       enable = true;
 
       themes = noxTheme;
 
       settings = {
-        theme = mue.helix.theme;
+        theme = cfg.theme;
 
-        editor = {
-          line-number = "relative";
-          mouse = true;
-          clipboard-provider = "wayland";
-          default-yank-register = "+";
-          cursor-shape = {
-            insert = "bar";
-            normal = "block";
-            select = "underline";
-          };
-          file-picker.hidden = false;
-          indent-guides.render = true;
-        } // mue.helix.extraConfig;
+        editor =
+          {
+            line-number = "relative";
+            mouse = true;
+            clipboard-provider = "wayland";
+            default-yank-register = "+";
+            cursor-shape = {
+              insert = "bar";
+              normal = "block";
+              select = "underline";
+            };
+            file-picker.hidden = false;
+            indent-guides.render = true;
+          }
+          // cfg.extraConfig;
 
         keys.normal = {
           space.space = "file_picker";
@@ -61,10 +89,10 @@ in {
               config.pylsp = {
                 plugins = {
                   ruff.enabled = true;
-                  pycodestyle.enabled = false;  # ruff handles this
-                  pyflakes.enabled = false;     # ruff handles this
-                  autopep8.enabled = false;     # use ruff
-                  yapf.enabled = false;         # use ruff
+                  pycodestyle.enabled = false; # ruff handles this
+                  pyflakes.enabled = false; # ruff handles this
+                  autopep8.enabled = false; # use ruff
+                  yapf.enabled = false; # use ruff
                 };
               };
             };
@@ -73,7 +101,7 @@ in {
             rust-analyzer = {
               command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
               config.rust-analyzer = {
-                check.command = "clippy";  # Use clippy instead of check
+                check.command = "clippy"; # Use clippy instead of check
                 cargo.loadOutDirsFromCheck = true;
                 procMacro.enable = true;
               };
@@ -125,7 +153,7 @@ in {
               };
             };
           })
-          mue.helix.extraLanguages
+          cfg.extraLanguages
         ];
 
         language = [
@@ -186,14 +214,16 @@ in {
           {
             name = "javascript";
             auto-format = true;
-            language-servers = lib.optional mue.lsp.javascript.enable
-        "typescript-language-server";
+            language-servers =
+              lib.optional mue.lsp.javascript.enable
+              "typescript-language-server";
           }
           {
             name = "typescript";
             auto-format = true;
-            language-servers = lib.optional mue.lsp.javascript.enable
-        "typescript-language-server";
+            language-servers =
+              lib.optional mue.lsp.javascript.enable
+              "typescript-language-server";
           }
         ];
       };

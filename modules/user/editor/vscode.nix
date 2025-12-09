@@ -4,9 +4,49 @@
   pkgs,
   ...
 }: let
-  mue = config.my.user.editor;
+  cfg = config.my.user.editor.vscode;
 in {
-  config = lib.mkIf mue.vscode.enable {
+  options.my.user.editor.vscode = {
+    enable = lib.mkEnableOption "VSCode editor";
+
+    font = lib.mkOption {
+      type = lib.types.str;
+      default = "IBM Plex Mono";
+      description = "Editor font family";
+    };
+
+    fontSize = lib.mkOption {
+      type = lib.types.int;
+      default = 14;
+      description = "Editor font size";
+    };
+
+    theme = lib.mkOption {
+      type = lib.types.str;
+      default = "Nox Default";
+      description = "VSCode color theme";
+    };
+
+    formatOnSave = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Auto-format on save";
+    };
+
+    extraExtensions = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = [];
+      description = "Additional VSCode extensions";
+    };
+
+    extraSettings = lib.mkOption {
+      type = lib.types.attrs;
+      default = {};
+      description = "Additional VSCode settings";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
     programs.vscode = {
       enable = true;
       package = pkgs.vscode;
@@ -44,7 +84,7 @@ in {
               }
             )
           ]
-          ++ mue.vscode.extraExtensions;
+          ++ cfg.extraExtensions;
 
         userSettings =
           {
@@ -60,11 +100,11 @@ in {
             "nix.serverPath" = "${pkgs.nixd}/bin/nixd";
             "nix.formatterPath" = "${pkgs.alejandra}/bin/alejandra";
 
-            "editor.formatOnSave" = mue.vscode.formatOnSave;
+            "editor.formatOnSave" = cfg.formatOnSave;
             "security.workspace.trust.enabled" = false;
 
-            "editor.fontFamily" = mue.vscode.font;
-            "editor.fontSize" = mue.vscode.fontSize;
+            "editor.fontFamily" = cfg.font;
+            "editor.fontSize" = cfg.fontSize;
 
             # File associations for QML syntax highlighting
             "files.associations" = {
@@ -88,7 +128,7 @@ in {
             # Force file type detection
             "files.autoGuessEncoding" = true;
 
-            "workbench.colorTheme" = mue.vscode.theme;
+            "workbench.colorTheme" = cfg.theme;
 
             "workbench.colorCustomizations" = {
               # The background color you found
@@ -102,7 +142,7 @@ in {
               "statusBar.border" = "#0D0D0D";
             };
           }
-          // mue.vscode.extraSettings;
+          // cfg.extraSettings;
       };
     };
   };

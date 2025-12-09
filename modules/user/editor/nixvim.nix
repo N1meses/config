@@ -1,13 +1,27 @@
-{config, lib, ...}:
-let 
+{
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.my.user.editor.nixvim;
   mue = config.my.user.editor;
 in {
-  config =  lib.mkIf mue.nixvim.enable {
+  options.my.user.editor.nixvim = {
+    enable = lib.mkEnableOption "NixVim (Neovim)" // {default = true;};
+
+    leaderKey = lib.mkOption {
+      type = lib.types.str;
+      default = " ";
+      description = "Leader key for keybindings";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
     programs.nixvim = {
       enable = true;
 
       # Set <Space> as the leader key
-      globals.mapleader = mue.nixvim.leaderKey;
+      globals.mapleader = cfg.leaderKey;
 
       # Basic editor options
       opts = {
@@ -22,7 +36,6 @@ in {
 
       # Enable plugins
       plugins = {
-
         # UI improvements
         lspkind = {
           enable = true;
@@ -64,19 +77,19 @@ in {
           enable = true;
           servers = {
             # Add servers for languages you use
-            nixd.enable = mue.lsp.nix.enable;      # Nix
-            bashls.enable = mue.lsp.bash.enable;    # Bash
-            gopls.enable = mue.lsp.go.enable;         # Go
-            jdtls.enable = mue.lsp.java.enable;       # Java
-            clangd.enable = mue.lsp.c.enable;         # C/C++
-            yamlls.enable = mue.lsp.yaml.enable;      # YAML
+            nixd.enable = mue.lsp.nix.enable; # Nix
+            bashls.enable = mue.lsp.bash.enable; # Bash
+            gopls.enable = mue.lsp.go.enable; # Go
+            jdtls.enable = mue.lsp.java.enable; # Java
+            clangd.enable = mue.lsp.c.enable; # C/C++
+            yamlls.enable = mue.lsp.yaml.enable; # YAML
             marksman.enable = mue.lsp.markdown.enable; # Markdown
-            ts_ls.enable = mue.lsp.javascript.enable;  # TypeScript/JavaScript
+            ts_ls.enable = mue.lsp.javascript.enable; # TypeScript/JavaScript
             pyright = {
               enable = mue.lsp.python.enable;
               settings.pyright.disableOrganizeImports = true; # Let Ruff handle imports
             };
-            ruff.enable = mue.lsp.python.enable;      # Python linting/formatting
+            ruff.enable = mue.lsp.python.enable; # Python linting/formatting
             rust_analyzer = {
               enable = mue.lsp.rust.enable; # Rust
               installCargo = true;
@@ -107,10 +120,10 @@ in {
             };
 
             sources = [
-              { name = "nvim_lsp"; }
-              { name = "luasnip"; }
-              { name = "buffer"; }
-              { name = "path"; }
+              {name = "nvim_lsp";}
+              {name = "luasnip";}
+              {name = "buffer";}
+              {name = "path";}
             ];
           };
         };

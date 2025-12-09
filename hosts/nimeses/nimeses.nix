@@ -12,6 +12,8 @@
   ];
 
   config = {
+    programs.home-manager.enable = true;
+
     home = {
       username = "nimeses";
       homeDirectory = "/home/nimeses";
@@ -33,7 +35,6 @@
         xwayland-satellite
 
         #cli
-        fastfetch
         btop
         ani-cli
         libreoffice-qt6-fresh
@@ -41,7 +42,6 @@
         claude-code
         cbonsai
         croc
-        ghostty
         gemini-cli
         trash-cli
         parted
@@ -50,11 +50,9 @@
         swappy
         wf-recorder
         todo
-        nh
         nom
         nvd
         nix-tree
-        starship
         tldr
 
         #themeing
@@ -71,15 +69,11 @@
         glib
 
         #applications
-        jetbrains.idea-ultimate
-        jetbrains.pycharm-professional
-        jetbrains.datagrip
         discord
         obsidian
         gimp
         zathura
         file-roller
-        galculator
         slurp
         anki
       ];
@@ -146,13 +140,12 @@
       };
 
       dotfiles = {
-        enable = true;
-        home-manager.enable = true;
         ghostty.enable = true;
         yazi.enable = true;
         nh.enable = true;
         fastfetch.enable = true;
         gtk.enable = true;
+        starship.enable = true;
       };
 
       noctalia.enable = true;
