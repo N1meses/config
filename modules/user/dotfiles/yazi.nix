@@ -10,7 +10,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    yazi = {
+    programs.yazi = {
       enable = true;
       enableBashIntegration = true;
       settings = {

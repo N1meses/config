@@ -8,7 +8,6 @@
     ../../modules/user/niri
     ../../modules/user/dotfiles
     ../../modules/user/services
-    ../../modules/user/starship
   ];
 
   config = {
@@ -107,7 +106,6 @@
           enable = true;
           theme = "nox-default";
         };
-        vi.enable = false;
 
         lsp = {
           nix.enable = true;

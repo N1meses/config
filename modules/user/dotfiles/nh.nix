@@ -10,7 +10,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    nh = {
+    programs.nh = {
       enable = true;
       clean = {
         enable = true;

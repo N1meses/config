@@ -10,7 +10,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    fastfetch = {
+    programs.fastfetch = {
       enable = true;
       settings = {
         logo = {

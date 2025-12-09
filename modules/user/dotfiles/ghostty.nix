@@ -10,7 +10,7 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    ghostty = {
+    programs.ghostty = {
       enable = true;
       settings = {
         config-file = ["~/.config/ghostty/themes/noctalia"];
