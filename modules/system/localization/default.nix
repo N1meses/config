@@ -1,7 +1,10 @@
-{ config, lib, ... }:
-let 
-  msl = config.my.system.localization;
-in{
+{
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.my.system.localization;
+in {
   options.my.system.localization = {
     enable = lib.mkEnableOption "Enable system localization settings (timezone and locale: default = Germany) .";
 
@@ -40,13 +43,13 @@ in{
     };
   };
 
-  config = lib.mkIf msl.enable {
-    time.timeZone = msl.timeZone;
+  config = lib.mkIf cfg.enable {
+    time.timeZone = cfg.timeZone;
 
     i18n = {
-      inherit (msl) defaultLocale extraLocaleSettings;
+      inherit (cfg) defaultLocale extraLocaleSettings;
     };
 
-    console.keyMap = msl.console.keyMap;
+    console.keyMap = cfg.console.keyMap;
   };
 }

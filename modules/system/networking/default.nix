@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  mys = config.my.system.networking;
+  cfg = config.my.system.networking;
 in {
   options.my.system.networking = {
     enable = lib.mkEnableOption "Enable custom Network Settings";
@@ -19,8 +19,8 @@ in {
 
     firewall = {
       enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
+        type = lib.types.nullOr lib.types.bool;
+        default = null;
         description = "Enable Firewall";
       };
 
@@ -32,17 +32,32 @@ in {
     };
   };
 
-  config = lib.mkIf config.my.system.networking.enable {
-    networking = {
-      hostName = config.my.system.host.hostName;
-      networkmanager.enable = mys.networkManager.enable;
-      firewall = {
-        enable = mys.firewall.enable;
-        trustedInterfaces = mys.firewall.trustedInterfaces;
+  config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = cfg.enable -> cfg.firewall.enable != null;
+          message = ''
+            You must explicitly set my.system.networking.firewall.enable.
+            This controls whether the system firewall is active - a critical security
+            setting.
+          '';
+        }
+      ];
+    }
+
+    (lib.mkIf config.my.system.networking.enable {
+      networking = {
+        hostName = config.my.system.host.hostName;
+        networkmanager.enable = cfg.networkManager.enable;
+        firewall = {
+          enable = cfg.firewall.enable;
+          trustedInterfaces = cfg.firewall.trustedInterfaces;
+        };
       };
-    };
-    environment.systemPackages = with pkgs;
-      []
-      ++ lib.optional mys.networkManager.enable networkmanager;
-  };
+      environment.systemPackages = with pkgs;
+        []
+        ++ lib.optional cfg.networkManager.enable networkmanager;
+    })
+  ];
 }

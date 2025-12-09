@@ -3,7 +3,9 @@
   config,
   lib,
   ...
-}: {
+}: let
+  cfg = config.my.system.boot;
+in {
   options.my.system.boot = {
     enable = lib.mkEnableOption "Enable custom bootloader";
 
@@ -48,8 +50,8 @@
           };
 
           canTouchEfiVariables = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
+            type = lib.types.nullOr lib.types.bool;
+            default = null;
             description = "Allow new generation entries in the efi";
           };
         };
@@ -64,25 +66,40 @@
     };
   };
 
-  config = lib.mkIf config.my.system.boot.enable {
-    boot = {
-      inherit (config.my.system.boot) kernelPackages supportedFilesystems;
+  config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = cfg.enable -> cfg.loader.canTouchEfiVariables != null;
+          message = ''
+            You must explicitly set my.system.boot.loader.canTouchEfiVariables.
+            Setting this to true allows the bootloader to modify EFI firmware variables.
+            This is required for most UEFI systems but can be dangerous if misconfigured.
+          '';
+        }
+      ];
+    }
 
-      plymouth.enable = config.my.system.boot.plymouth;
+    (lib.mkIf cfg.enable {
+      boot = {
+        inherit (cfg) kernelPackages supportedFilesystems;
 
-      loader = {
-        grub.enable = lib.mkForce false;
-        systemd-boot = {
-          enable = lib.mkForce config.my.system.boot.loader.systemd-boot.enable;
-          inherit (config.my.system.boot.loader.systemd-boot) editor configurationLimit;
+        plymouth.enable = cfg.plymouth;
+
+        loader = {
+          grub.enable = lib.mkForce false;
+          systemd-boot = {
+            enable = lib.mkForce cfg.loader.systemd-boot.enable;
+            inherit (cfg.loader.systemd-boot) editor configurationLimit;
+          };
+          efi = {
+            canTouchEfiVariables = cfg.loader.canTouchEfiVariables;
+          };
         };
-        efi = {
-          canTouchEfiVariables = config.my.system.boot.loader.canTouchEfiVariables;
-        };
+        # Assuming initrd.systemd.enable and initrd.verbose are desired defaults if boot.enable
+        initrd.systemd.enable = true;
+        initrd.verbose = false;
       };
-      # Assuming initrd.systemd.enable and initrd.verbose are desired defaults if boot.enable
-      initrd.systemd.enable = true;
-      initrd.verbose = false;
-    };
-  };
+    })
+  ];
 }

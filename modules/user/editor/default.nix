@@ -11,6 +11,7 @@ in {
     ./nixvim.nix
     ./helix.nix
     ./jetbrains.nix
+    ./vi.nix
   ];
 
   options.my.user.editor = {

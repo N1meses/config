@@ -15,6 +15,7 @@
     ../../modules/system/shell
   ];
 
+  # these modules are found unser /modules/system/
   config = {
     nix.package = pkgs.nix;
 
@@ -24,7 +25,10 @@
         hostName = "nimeses";
       };
 
-      boot.enable = true;
+      boot = {
+        enable = true;
+        loader.canTouchEfiVariables = true;
+      };
 
       localization.enable = true;
 
@@ -34,20 +38,21 @@
 
       networking = {
         enable = true;
-        firewall.trustedInterfaces = ["tailscale0"];
+        firewall = {
+          enable = true;
+          trustedInterfaces = ["tailscale0"];
+        };
       };
 
       services = {
-        enable = true;
         bluetooth.enable = true;
         audio.enable = true;
-        mysql.enable = true;
+        mysql.enable = false;
         tailscale.enable = true;
         power.enable = true;
         displayManager.enable = true;
         gnomeKeyring.enable = true;
         udisks.enable = true;
-        xserver.enable = false;
       };
 
       virtualisation = {

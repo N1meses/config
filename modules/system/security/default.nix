@@ -1,5 +1,10 @@
-{config, lib, ...}:
 {
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.my.system.security;
+in {
   options.my.system.security = {
     enable = lib.mkEnableOption "Enable security settings";
 
@@ -7,18 +12,17 @@
 
     GnomeKeyring = {
       enable = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-          description = "Enable GNOME Keyring integration with SDDM";
+        type = lib.types.bool;
+        default = true;
+        description = "Enable GNOME Keyring integration with SDDM";
       };
     };
   };
 
-  config = lib.mkIf config.my.system.security.enable {
-    security.rtkit.enable = config.my.system.security.Rtkit.enable;
+  config = lib.mkIf cfg.enable {
+    security.rtkit.enable = cfg.Rtkit.enable;
     security.pam.services.sddm = {
-      enableGnomeKeyring = config.my.system.security.GnomeKeyring.enable;
-      # Ensure SDDM can authenticate with yescrypt password hashes
+      enableGnomeKeyring = cfg.GnomeKeyring.enable;
       unixAuth = lib.mkDefault true;
     };
   };

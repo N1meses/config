@@ -5,6 +5,7 @@
   ...
 }: let
   cfg = config.my.user.noctalia;
+  flakeRoot = inputs.self;
 in {
   imports = [
     inputs.noctalia.homeModules.default
@@ -92,7 +93,7 @@ in {
             ];
             left = [
               {
-                customIconPath = "/home/nimeses/nixconfig/modules/user/icon/nixos.png";
+                customIconPath = "${flakeRoot}/assets/icons/nixos.png";
                 icon = "NixOS";
                 id = "ControlCenter";
                 useDistroLogo = false;
@@ -242,7 +243,7 @@ in {
         general = {
           animationDisabled = false;
           animationSpeed = 1.5;
-          avatarImage = "/home/nimeses/nixconfig/modules/user/icon/hunter.jpeg";
+          avatarImage = "${flakeRoot}/assets/icons/hunter.jpeg";
           compactLockScreen = false;
           dimDesktop = true;
           enableShadows = false;
@@ -315,7 +316,7 @@ in {
           audioCodec = "opus";
           audioSource = "default_output";
           colorRange = "limited";
-          directory = "/home/nimeses/Videos";
+          directory = "${config.xdg.userDirs.videos}";
           frameRate = 60;
           quality = "very_high";
           showCursor = true;
@@ -365,8 +366,8 @@ in {
         };
 
         wallpaper = {
-          defaultWallpaper = "/home/nimeses/nixconfig/modules/user/wallpaper/wallhaven_exkqk8.jpg";
-          directory = "/home/nimeses/nixconfig/modules/user/wallpaper"; # Added!
+          defaultWallpaper = "${flakeRoot}/assets/wallpapers/wallhaven_exkqk8.jpg";
+          directory = "${flakeRoot}/assets/wallpapers/";
           enableMultiMonitorDirectories = false;
           enabled = true;
           fillColor = "#000000";

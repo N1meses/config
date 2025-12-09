@@ -14,6 +14,6 @@ activate/
 .vscode/
 
 #Custom ignores for your project
-/home/nimeses/self_packages/
-/modules/user/wallpaper/*
+assets/wallpapers/*
+
 modules/user/bash/keys

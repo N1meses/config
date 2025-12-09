@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  msv = config.my.system.virtualisation;
+  cfg = config.my.system.virtualisation;
 in {
   options.my.system.virtualisation = {
     enable = lib.mkEnableOption "virtualisation support for libvirt and virt-manager";
@@ -22,22 +22,22 @@ in {
     };
   };
 
-  config = lib.mkIf msv.enable {
+  config = lib.mkIf cfg.enable {
     virtualisation.libvirtd = {
       enable = true;
       qemu = {
-        package = msv.qemuPackage;
+        package = cfg.qemuPackage;
         runAsRoot = true;
-        swtpm.enable = msv.TPM.enable;
+        swtpm.enable = cfg.TPM.enable;
       };
     };
 
     users.users.${config.my.system.host.userName}.extraGroups = ["libvirtd" "kvm"];
 
-    programs.virt-manager.enable = msv.virtManager.enable;
+    programs.virt-manager.enable = cfg.virtManager.enable;
 
     environment.systemPackages = with pkgs;
       []
-      ++ lib.optional msv.virtManager.enable virt-manager;
+      ++ lib.optional cfg.virtManager.enable virt-manager;
   };
 }

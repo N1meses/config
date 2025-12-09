@@ -1,9 +1,12 @@
-{config, lib, pkgs,...}:
-let 
-  mss = config.my.system.settings;
-in{
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.my.system.settings;
+in {
   options.my.system.settings = {
-
     enable = lib.mkEnableOption "Enable custom settings like downloading from caches and other things";
 
     experimental-features = lib.mkOption {
@@ -16,11 +19,11 @@ in{
 
     garbageCollector = {
       enable = lib.mkEnableOption "Enable automatic garbage collection";
-      
+
       dates = lib.mkOption {
         type = lib.types.str;
         default = "daily";
-        description = "how often to grabage collect";
+        description = "how often to garbage collect";
       };
     };
 
@@ -52,58 +55,60 @@ in{
       type = lib.types.int;
       default = 16;
       description = "how many substitution jobs are available";
-    }; 
+    };
   };
 
-  config = lib.mkIf mss.enable {
+  config = lib.mkIf cfg.enable {
     nix.settings = {
-      experimental-features = mss.experimental-features;
+      experimental-features = cfg.experimental-features;
 
-      trusted-users = mss.trusted-users ++ [config.my.system.host.userName];
+      trusted-users = cfg.trusted-users ++ [config.my.system.host.userName];
 
-      auto-optimise-store = mss.auto-optimise-store;
+      auto-optimise-store = cfg.auto-optimise-store;
 
-      download-buffer-size = mss.download-buffer-size;
+      download-buffer-size = cfg.download-buffer-size;
 
-      http-connections = mss.http-connections;
+      http-connections = cfg.http-connections;
 
-      max-substitution-jobs = mss.max-substitution-jobs;
+      max-substitution-jobs = cfg.max-substitution-jobs;
 
-      substituters = [
-        "https://cache.nixos.org"
-        "https://nix-community.cachix.org"
-      ] ++ lib.optional config.my.system.niri.enable "https://niri.cachix.org"
+      substituters =
+        [
+          "https://cache.nixos.org"
+          "https://nix-community.cachix.org"
+        ]
+        ++ lib.optional config.my.system.niri.enable "https://niri.cachix.org"
         ++ lib.optional config.my.system.hyprland.enable "https://hyprland.cachix.org";
 
-
-      trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ] ++ lib.optional config.my.system.niri.enable "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
-        ++ lib.optional config.my.system.hyprland.enable "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=";     
+      trusted-public-keys =
+        [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        ]
+        ++ lib.optional config.my.system.niri.enable "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
+        ++ lib.optional config.my.system.hyprland.enable "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=";
     };
 
-    nix.gc = lib.mkIf mss.garbageCollector.enable {
-      automatic = mss.garbageCollector.enable;
-      dates = mss.garbageCollector.dates;
+    nix.gc = lib.mkIf cfg.garbageCollector.enable {
+      automatic = cfg.garbageCollector.enable;
+      dates = cfg.garbageCollector.dates;
       options = "--delete-older-than 7d";
     };
 
     programs.nix-ld = {
-      enable = mss.nix-ld.enable;
+      enable = cfg.nix-ld.enable;
 
-
-      libraries = with pkgs;[
+      libraries = with pkgs; [
         curl
         stdenv.cc.cc
         zlib
         fuse3
         icu
         nss
-        openssl 
-        expat 
+        openssl
+        expat
         xorg.libX11
-        vulkan-headers 
+        vulkan-headers
         vulkan-loader
         vulkan-tools
       ];

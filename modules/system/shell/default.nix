@@ -1,9 +1,16 @@
-{config, lib, pkgs, ...}:
-let
-  mss = config.my.system.shell;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.my.system.shell;
   userName = config.my.system.host.userName;
 
-  shellPackage = if (mss.defaultShell == "zsh") then pkgs.zsh else pkgs.bashInteractive;
+  shellPackage =
+    if (cfg.defaultShell == "zsh")
+    then pkgs.zsh
+    else pkgs.bashInteractive;
 in {
   options.my.system.shell = {
     enable = lib.mkEnableOption "Enable system-level shell configuration";
@@ -15,15 +22,16 @@ in {
     };
   };
 
-  config = lib.mkIf mss.enable {
-    # Set the user's default shell
+  config = lib.mkIf cfg.enable {
     users.users.${userName}.shell = shellPackage;
 
-    # Ensure the shell package is available system-wide
-    environment.shells = [ shellPackage ];
+    environment.shells = [shellPackage];
 
-    # Enable the shell program system-wide
-    programs.zsh.enable = lib.mkIf (mss.defaultShell == "zsh") true;
-    programs.bash.enableCompletion = lib.mkIf (mss.defaultShell == "bash") true;
+    programs.zsh.enable = lib.mkIf (cfg.defaultShell == "zsh") true;
+
+    programs.bash = lib.mkIf (cfg.defaultShell == "bash") {
+      enable = true;
+      enableCompletion = true;
+    };
   };
 }

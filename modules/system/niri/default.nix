@@ -1,6 +1,10 @@
-{config, lib, pkgs, ...}:
-let 
-  msn = config.my.system.niri;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.my.system.niri;
 in {
   options.my.system.niri = {
     enable = lib.mkEnableOption "enable the niri window manager";
@@ -12,10 +16,10 @@ in {
     };
   };
 
-  config = lib.mkIf msn.enable {
+  config = lib.mkIf cfg.enable {
     programs.niri = {
-      enable = msn.enable;
-      package = msn.package;
+      enable = cfg.enable;
+      package = cfg.package;
     };
   };
 }
