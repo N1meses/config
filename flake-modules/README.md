@@ -10,6 +10,7 @@ flake-modules/
 ├── formatter.nix             # Alejandra formatter
 ├── nixos-configurations.nix  # NixOS system configs
 ├── home-configurations.nix   # Home Manager configs
+├── hosts.nix                 # Host configs
 └── dev-shells.nix           # Development environments
 ```
 
