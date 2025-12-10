@@ -1,6 +1,6 @@
 # Nix build results
 /result*
-
+hosts/*/projcts/
 # Python build artifacts and virtual environments
 __pycache__/
 *.pyc

@@ -111,13 +111,13 @@
           nix.enable = true;
           bash.enable = true;
           python.enable = true;
-          rust.enable = false;
+          rust.enable = true;
           javascript.enable = false;
           go.enable = false;
           java.enable = false;
           c.enable = false;
           yaml.enable = false;
-          markdown.enable = false;
+          markdown.enable = true;
         };
         tools.enable = true;
       };

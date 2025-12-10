@@ -24,6 +24,10 @@
       mcp-server = import ../devShells/mcp-server {
         inherit pkgs;
       };
+
+      rust = import ../devShells/rust {
+        inherit pkgs;
+      };
     };
   };
 }

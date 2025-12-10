@@ -1,6 +1,4 @@
-
-{ pkgs, ... }:
-
+{pkgs, ...}:
 pkgs.mkShell {
   name = "python-dev";
   buildInputs = with pkgs; [

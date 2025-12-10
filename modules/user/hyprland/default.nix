@@ -79,8 +79,9 @@ in {
     enable = lib.mkEnableOption "Enable user-level Hyprland configuration";
 
     monitor = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.nullOr (lib.types.listOf lib.types.str);
       description = "Monitor configuration in hyprland format";
+      default = null;
       example = [
         "eDP-1,2880x1920@120,0x0,1.6"
         "HDMI-A-1,1920x1080@60,2880x0,1.0"
@@ -116,131 +117,143 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    wayland.windowManager.hyprland = {
-      enable = true;
-      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = cfg.enable -> cfg.monitor != null;
+          message = ''
+            You have to set resolution, framerate and scaling of one monitor!
+          '';
+        }
+      ];
+    }
+    (lib.mkIf cfg.enable {
+      wayland.windowManager.hyprland = {
+        enable = true;
+        package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
 
-      settings = {
-        monitor = cfg.monitor;
+        settings = {
+          monitor = cfg.monitor;
 
-        env = [
-          "NIXOS_OZONE_WL,1"
-          "MOZ_ENABLE_WAYLAND,1"
-          "GDK_BACKEND,wayland,x11"
-          "QT_QPA_PLATFORM,wayland"
-          "XDG_CURRENT_DESKTOP,Hyprland"
-          "XDG_SESSION_TYPE,wayland"
-          "XDG_SESSION_DESKTOP,Hyprland"
-          "SDL_VIDEODRIVER,wayland"
-          "_JAVA_AWT_WM_NONREPARENTING,1"
-          "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
-        ];
-
-        # --- Startup ---
-        exec-once =
-          [
-            "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
-            "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-          ]
-          ++ lib.optional config.my.user.noctalia.enable "noctalia-shell";
-
-        general = {
-          layout = cfg.settings.layout;
-          gaps_in = cfg.settings.gapSize;
-          gaps_out = cfg.settings.gapSize * 2;
-          border_size = cfg.settings.borderSize;
-
-          # Emerald Green (Active) / Grey (Inactive)
-          "col.active_border" = "rgb(50C878)";
-          "col.inactive_border" = "rgb(595959)";
-
-          resize_on_border = true;
-        };
-
-        gesture = "3, horizontal, workspace";
-
-        decoration = {
-          rounding = 16;
-
-          # Opacity managed via windowrule for dynamic control (matching Niri)
-          active_opacity = 1.0;
-          inactive_opacity = 1.0;
-
-          shadow = {
-            enabled = true;
-            range = 8;
-            render_power = 2;
-          };
-        };
-
-        # --- Animations ---
-        animations = {
-          enabled = true;
-          bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-          animation = [
-            "windows, 1, 7, myBezier"
-            "windowsOut, 1, 7, default, popin 80%"
-            "border, 1, 10, default"
-            "borderangle, 1, 8, default"
-            "fade, 1, 7, default"
-            "workspaces, 1, 6, default"
+          env = [
+            "NIXOS_OZONE_WL,1"
+            "MOZ_ENABLE_WAYLAND,1"
+            "GDK_BACKEND,wayland,x11"
+            "QT_QPA_PLATFORM,wayland"
+            "XDG_CURRENT_DESKTOP,Hyprland"
+            "XDG_SESSION_TYPE,wayland"
+            "XDG_SESSION_DESKTOP,Hyprland"
+            "SDL_VIDEODRIVER,wayland"
+            "_JAVA_AWT_WM_NONREPARENTING,1"
+            "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
           ];
-        };
 
-        # --- Input ---
-        input = {
-          kb_layout = "de";
-          follow_mouse = 1; # Focus follows mouse
+          # --- Startup ---
+          exec-once =
+            [
+              "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+              "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+            ]
+            ++ lib.optional config.my.user.noctalia.enable "noctalia-shell";
 
-          touchpad = {
-            natural_scroll = true; #
-            disable_while_typing = true;
-            clickfinger_behavior = true;
-            scroll_factor = 1.0; # Adjust if sticky
+          general = {
+            layout = cfg.settings.layout;
+            gaps_in = cfg.settings.gapSize;
+            gaps_out = cfg.settings.gapSize * 2;
+            border_size = cfg.settings.borderSize;
+
+            # Emerald Green (Active) / Grey (Inactive)
+            "col.active_border" = "rgb(50C878)";
+            "col.inactive_border" = "rgb(595959)";
+
+            resize_on_border = true;
           };
+
+          gesture = "3, horizontal, workspace";
+
+          decoration = {
+            rounding = 16;
+
+            # Opacity managed via windowrule for dynamic control (matching Niri)
+            active_opacity = 1.0;
+            inactive_opacity = 1.0;
+
+            shadow = {
+              enabled = true;
+              range = 8;
+              render_power = 2;
+            };
+          };
+
+          # --- Animations ---
+          animations = {
+            enabled = true;
+            bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+            animation = [
+              "windows, 1, 7, myBezier"
+              "windowsOut, 1, 7, default, popin 80%"
+              "border, 1, 10, default"
+              "borderangle, 1, 8, default"
+              "fade, 1, 7, default"
+              "workspaces, 1, 6, default"
+            ];
+          };
+
+          # --- Input ---
+          input = {
+            kb_layout = "de";
+            follow_mouse = 1; # Focus follows mouse
+
+            touchpad = {
+              natural_scroll = true; #
+              disable_while_typing = true;
+              clickfinger_behavior = true;
+              scroll_factor = 1.0; # Adjust if sticky
+            };
+          };
+
+          # --- Cursor (Matching Niri) ---
+          cursor = {
+            hide_on_touch = true;
+            inactive_timeout = 3; # Hide after 3 seconds like Niri
+          };
+
+          debug = {
+            disable_logs = false;
+          };
+
+          misc = {
+            disable_hyprland_logo = true;
+            focus_on_activate = true;
+            disable_hyprland_guiutils_check = true;
+          };
+
+          # --- Window & Layer Rules ---
+          windowrule = [
+            # Dynamic opacity rules (matching Niri behavior)
+            # Format: "opacity [focused] [unfocused]"
+
+            # Default for all windows: 0.98 focused, 0.90 unfocused
+            "opacity 0.98 0.90"
+
+            # Brave: always 1.0 (both focused and unfocused)
+            "opacity 1.0 0.9, match:class ^com\\.brave\\.Browser$"
+            "opacity 1.0 0.9, match:class ^brave-browser$"
+
+            # Ghostty: 0.95 focused, 0.90 unfocused (matching Niri)
+            "opacity 0.95 0.90, match:class ^com\\.mitchellh\\.ghostty$"
+          ];
+
+          # --- Keybind List ---
+          bind =
+            []
+            ++ window_binds
+            ++ workspace_binds
+            ++ launching_binds
+            ++ lib.optionals config.my.user.noctalia.enable noctalia_binds;
         };
-
-        # --- Cursor (Matching Niri) ---
-        cursor = {
-          hide_on_touch = true;
-          inactive_timeout = 3; # Hide after 3 seconds like Niri
-        };
-
-        debug = {
-          disable_logs = false;
-        };
-
-        misc = {
-          disable_hyprland_logo = true;
-          focus_on_activate = true;
-          disable_hyprland_guiutils_check = true;
-        };
-
-        # --- Window & Layer Rules ---
-        windowrule = [
-          # Dynamic opacity rules (matching Niri behavior)
-          # Format: "opacity [focused] [unfocused]"
-
-          # Default for all windows: 0.98 focused, 0.90 unfocused
-          "opacity 0.98 0.90"
-
-          # Brave: always 1.0 (both focused and unfocused)
-          "opacity 1.0 0.9, match:class ^com\\.brave\\.Browser$"
-          "opacity 1.0 0.9, match:class ^brave-browser$"
-
-          # Ghostty: 0.95 focused, 0.90 unfocused (matching Niri)
-          "opacity 0.95 0.90, match:class ^com\\.mitchellh\\.ghostty$"
-        ];
-
-        # --- Keybind List ---
-        bind =
-          []
-          ++ window_binds
-          ++ workspace_binds
-          ++ launching_binds
-          ++ lib.optionals config.my.user.noctalia.enable noctalia_binds;
       };
-    };
-  };
+    })
+  ];
 }

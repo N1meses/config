@@ -112,7 +112,7 @@ in {
     enable = lib.mkEnableOption "Enable custom niri configuration";
 
     outputs = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
+      type = lib.types.nullOr (lib.types.attrsOf (lib.types.submodule {
         options = {
           scale = lib.mkOption {
             type = lib.types.float;
@@ -142,7 +142,8 @@ in {
             };
           };
         };
-      });
+      }));
+      default = null;
     };
 
     layout = {
@@ -167,155 +168,170 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    systemd.user.services.libinput-gestures = lib.mkIf cfg.input.touchpad.enable {
-      gestures = {
-        "swipe left 3" = "niri msg action focus-column-left-or-last";
-        "swipe right 3" = "niri msg action focus-column-right-or-first";
-        "swipe up 3" = "niri msg action focus-column-prev";
-        "swipe down 3" = "niri msg action focus-column-next";
-      };
-    };
+  config = lib.mkMerge [
+    {
+      assertions = [
+        {
+          assertion = cfg.enable -> cfg.outputs != null;
+          message = ''
+            You must set your display resolution and framrate!
+          '';
+        }
+      ];
+    }
 
-    programs.niri = {
-      enable = true;
+    (
+      lib.mkIf cfg.enable {
+        systemd.user.services.libinput-gestures = lib.mkIf cfg.input.touchpad.enable {
+          gestures = {
+            "swipe left 3" = "niri msg action focus-column-left-or-last";
+            "swipe right 3" = "niri msg action focus-column-right-or-first";
+            "swipe up 3" = "niri msg action focus-column-prev";
+            "swipe down 3" = "niri msg action focus-column-next";
+          };
+        };
 
-      package = pkgs.niri-unstable;
-
-      settings = {
-        animations.enable = true;
-
-        xwayland-satellite = {
+        programs.niri = {
           enable = true;
-          path = lib.getExe pkgs.xwayland-satellite;
-        };
 
-        environment = {
-          _JAVA_AWT_WM_NONREPARENTING = "1";
-          AWT_TOOLKIT = "MToolkit";
-          NIXOS_OZONE_WL = "1";
-          MOZ_ENABLE_WAYLAND = "1";
-          GDK_BACKEND = "wayland,x11";
-          QT_QPA_PLATFORM = "wayland";
-          DISPLAY = ":0";
-          QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-          SDL_VIDEODRIVER = "wayland";
-        };
+          package = pkgs.niri-unstable;
 
-        prefer-no-csd = true;
+          settings = {
+            animations.enable = true;
 
-        spawn-at-startup =
-          [
-            {argv = ["mako"];}
-            {sh = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";}
-            {sh = "${pkgs.xwayland-satellite-unstable}/bin/xwayland-satellite";}
-          ]
-          ++ lib.optional cfg.input.touchpad.enable {argv = ["libinput-gestures-start"];}
-          ++ lib.optional config.my.user.noctalia.enable {command = ["noctalia-shell"];};
-
-        outputs = cfg.outputs;
-
-        layout = {
-          gaps = cfg.layout.gaps;
-          border = {
-            enable = cfg.layout.border.enable;
-            width = cfg.layout.border.width;
-            active.color = "#50C878";
-          };
-          focus-ring.enable = false;
-          shadow.enable = true;
-          background-color = "rgba(107, 229, 91, 0)";
-          center-focused-column = "never";
-          default-column-display = "normal";
-          default-column-width = {proportion = 1.0;};
-        };
-
-        layer-rules =
-          []
-          ++ lib.optional config.my.user.noctalia.enable {
-            matches = [{namespace = "^noctalia-wallpaper.*";}];
-            place-within-backdrop = true;
-          };
-
-        window-rules = [
-          {
-            geometry-corner-radius = {
-              top-left = 16.0;
-              top-right = 16.0;
-              bottom-left = 16.0;
-              bottom-right = 16.0;
+            xwayland-satellite = {
+              enable = true;
+              path = lib.getExe pkgs.xwayland-satellite;
             };
-            clip-to-geometry = true;
 
-            draw-border-with-background = false;
-          }
+            environment = {
+              _JAVA_AWT_WM_NONREPARENTING = "1";
+              AWT_TOOLKIT = "MToolkit";
+              NIXOS_OZONE_WL = "1";
+              MOZ_ENABLE_WAYLAND = "1";
+              GDK_BACKEND = "wayland,x11";
+              QT_QPA_PLATFORM = "wayland";
+              DISPLAY = ":0";
+              QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+              SDL_VIDEODRIVER = "wayland";
+            };
 
-          {
-            matches = [{is-focused = false;}];
-            opacity = 0.9;
-          }
+            prefer-no-csd = true;
 
-          {
-            matches = [{is-focused = true;}];
-            opacity = 0.98;
-          }
+            spawn-at-startup =
+              [
+                {argv = ["mako"];}
+                {sh = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP";}
+                {sh = "${pkgs.xwayland-satellite-unstable}/bin/xwayland-satellite";}
+              ]
+              ++ lib.optional cfg.input.touchpad.enable {argv = ["libinput-gestures-start"];}
+              ++ lib.optional config.my.user.noctalia.enable {command = ["noctalia-shell"];};
 
-          {
-            matches = [{app-id = "^com\.mitchellh\.ghostty$";}];
-            default-column-width = {proportion = 0.5;};
-          }
+            outputs = cfg.outputs;
 
-          {
-            matches = [
+            layout = {
+              gaps = cfg.layout.gaps;
+              border = {
+                enable = cfg.layout.border.enable;
+                width = cfg.layout.border.width;
+                active.color = "#50C878";
+              };
+              focus-ring.enable = false;
+              shadow.enable = true;
+              background-color = "rgba(107, 229, 91, 0)";
+              center-focused-column = "never";
+              default-column-display = "normal";
+              default-column-width = {proportion = 1.0;};
+            };
+
+            layer-rules =
+              []
+              ++ lib.optional config.my.user.noctalia.enable {
+                matches = [{namespace = "^noctalia-wallpaper.*";}];
+                place-within-backdrop = true;
+              };
+
+            window-rules = [
               {
-                app-id = "^com\.mitchellh\.ghostty$";
-                is-focused = true;
+                geometry-corner-radius = {
+                  top-left = 16.0;
+                  top-right = 16.0;
+                  bottom-left = 16.0;
+                  bottom-right = 16.0;
+                };
+                clip-to-geometry = true;
+
+                draw-border-with-background = false;
+              }
+
+              {
+                matches = [{is-focused = false;}];
+                opacity = 0.9;
+              }
+
+              {
+                matches = [{is-focused = true;}];
+                opacity = 0.98;
+              }
+
+              {
+                matches = [{app-id = "^com\.mitchellh\.ghostty$";}];
+                default-column-width = {proportion = 0.5;};
+              }
+
+              {
+                matches = [
+                  {
+                    app-id = "^com\.mitchellh\.ghostty$";
+                    is-focused = true;
+                  }
+                ];
+                opacity = 0.95;
+                default-column-width = {proportion = 0.55;};
+              }
+
+              {
+                matches = [
+                  {
+                    app-id = "^com\.brave\.Browser$";
+                    is-focused = true;
+                  }
+                  {
+                    app-id = "^brave-browser$";
+                    is-focused = true;
+                  }
+                ];
+                opacity = 1.0;
               }
             ];
-            opacity = 0.95;
-            default-column-width = {proportion = 0.55;};
-          }
 
-          {
-            matches = [
-              {
-                app-id = "^com\.brave\.Browser$";
-                is-focused = true;
-              }
-              {
-                app-id = "^brave-browser$";
-                is-focused = true;
-              }
-            ];
-            opacity = 1.0;
-          }
-        ];
+            overview.workspace-shadow.enable = false;
 
-        overview.workspace-shadow.enable = false;
+            input = {
+              keyboard.xkb.layout = "de";
+              focus-follows-mouse.enable = true;
+              touchpad = {
+                natural-scroll = true;
+                dwt = true;
+                tap = true;
+                middle-emulation = true;
+                scroll-factor = 1.0;
+              };
+            };
 
-        input = {
-          keyboard.xkb.layout = "de";
-          focus-follows-mouse.enable = true;
-          touchpad = {
-            natural-scroll = true;
-            dwt = true;
-            tap = true;
-            middle-emulation = true;
-            scroll-factor = 1.0;
+            binds =
+              {}
+              // defaultBinds
+              // lib.optionalAttrs cfg.input.mouse.enable mouseBinds
+              // lib.optionalAttrs config.my.user.noctalia.enable noctaliaBinds;
+
+            cursor = {
+              hide-when-typing = true;
+              hide-after-inactive-ms = 3000;
+            };
           };
         };
-
-        binds =
-          {}
-          // defaultBinds
-          // lib.optionalAttrs cfg.input.mouse.enable mouseBinds
-          // lib.optionalAttrs config.my.user.noctalia.enable noctaliaBinds;
-
-        cursor = {
-          hide-when-typing = true;
-          hide-after-inactive-ms = 3000;
-        };
-      };
-    };
-  };
+      }
+    )
+  ];
 }
