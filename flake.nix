@@ -47,6 +47,7 @@
       systems = ["x86_64-linux"];
 
       imports = [
+        ./flake-modules/hosts.nix
         ./flake-modules/common.nix
         ./flake-modules/formatter.nix
         ./flake-modules/nixos-configurations.nix

@@ -1,6 +1,8 @@
 {
   inputs,
   withSystem,
+  config,
+  lib,
   ...
 }: {
   flake.nixosConfigurations = let
@@ -36,9 +38,8 @@
           ];
           specialArgs = {inherit (inputs) quickshell; inherit inputs;};
         });
-  in {
-    nimeses = mkNixosSystem "nimeses" "x86_64-linux";
-    # prometheus = mkNixosSystem "prometheus" "x86_64-linux";
-    # hephaistos = mkNixosSystem "hephaistos" "x86_64-linux";
-  };
+  in
+    lib.mapAttrs (name: host:
+      mkNixosSystem host.hostName host.system)
+    config.flake.hosts;
 }

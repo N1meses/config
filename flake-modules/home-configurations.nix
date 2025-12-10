@@ -1,6 +1,8 @@
 {
   inputs,
   withSystem,
+  config,
+  lib,
   ...
 }: {
   flake.homeConfigurations = let
@@ -25,9 +27,8 @@
             };
           }
       );
-  in {
-    nimeses = mkHomeConfiguration "nimeses" "x86_64-linux";
-    # prometheus = mkHomeConfiguration "prometheus" "x86_64-linux";
-    # hephaistos = mkHomeConfiguration "hephaistos" "x86_64-linux";
-  };
+  in
+    lib.mapAttrs (name: host:
+      mkHomeConfiguration host.hostName host.system)
+    config.flake.hosts;
 }
