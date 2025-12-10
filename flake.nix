@@ -4,14 +4,11 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    blocklist-hosts = {
-      url = "github:StevenBlack/hosts";
-      flake = false;
     };
 
     hyprland = {
@@ -45,95 +42,16 @@
     };
   };
 
-  outputs = inputs @ {
-    nixpkgs,
-    home-manager,
-    hyprland,
-    quickshell,
-    noctalia,
-    niri,
-    nixvim,
-    nix-index-database,
-    ...
-  }: let
-    system = "x86_64-linux";
+  outputs = inputs @ {flake-parts, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux"];
 
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-      overlays = [
-        niri.overlays.niri
+      imports = [
+        ./flake-modules/common.nix
+        ./flake-modules/formatter.nix
+        ./flake-modules/nixos-configurations.nix
+        ./flake-modules/home-configurations.nix
+        ./flake-modules/dev-shells.nix
       ];
     };
-  in {
-    nixosConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"] (hostName:
-      nixpkgs.lib.nixosSystem {
-        inherit system pkgs;
-        modules = [
-          ./hosts/${hostName}/default.nix
-          home-manager.nixosModules.home-manager
-
-          {
-            environment.systemPackages = [
-              home-manager.packages.${system}.home-manager
-            ];
-
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.${hostName} = {
-              imports = [
-                niri.homeModules.niri
-                nixvim.homeModules.nixvim
-                nix-index-database.homeModules.nix-index
-                {
-                  programs.nix-index-database.comma.enable = true;
-                  programs.command-not-found.enable = false;
-                }
-                ./hosts/${hostName}/${hostName}.nix
-              ];
-            };
-            home-manager.extraSpecialArgs = {inherit quickshell inputs;};
-          }
-        ];
-        specialArgs = {inherit quickshell inputs;};
-      });
-
-    homeConfigurations = nixpkgs.lib.genAttrs ["nimeses" "prometheus" "hephaistos"] (hostName:
-      home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [
-          niri.homeModules.niri
-          nixvim.homeModules.nixvim
-          nix-index-database.homeModules.nix-index
-          {
-            programs.nix-index-database.comma.enable = true;
-            programs.command-not-found.enable = false;
-          }
-          ./hosts/${hostName}/${hostName}.nix
-        ];
-        extraSpecialArgs = {inherit quickshell inputs;};
-      });
-
-    devShells.${system} = {
-      python = import ./devShells/python {
-        inherit pkgs;
-      };
-
-      java = import ./devShells/java {
-        inherit pkgs;
-      };
-
-      stock-analysis = import ./devShells/stock_analysis {
-        inherit pkgs;
-      };
-
-      chat = import ./devShells/chat {
-        inherit pkgs;
-      };
-
-      django = import ./devShells/django {
-        inherit pkgs;
-      };
-    };
-  };
 }
