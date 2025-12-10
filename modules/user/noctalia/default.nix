@@ -366,8 +366,8 @@ in {
         };
 
         wallpaper = {
-          defaultWallpaper = "${flakeRoot}/assets/wallpapers/wallhaven_exkqk8.jpg";
-          directory = "${flakeRoot}/assets/wallpapers/";
+          defaultWallpaper = "${config.xdg.userDirs.pictures}/Wallpapers/wallhaven_exkqk8.jpg";
+          directory = "${config.xdg.userDirs.pictures}/Wallpapers";
           enableMultiMonitorDirectories = false;
           enabled = true;
           fillColor = "#000000";

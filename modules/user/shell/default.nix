@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  mus = config.my.user.shell;
+  cfg = config.my.user.shell;
 
   defaultAliases = {
     # NixOS management with nh (replaces nixos-rebuild & home-manager)
@@ -47,7 +47,7 @@
     tree-pkg = "nix-tree nixpkgs#"; # Explore package (append name)
   };
 
-  ezaAliases = lib.optionalAttrs mus.eza.enable {
+  ezaAliases = lib.optionalAttrs cfg.eza.enable {
     # File listing (eza)
     ls = "eza --icons=auto --git";
     ll = "eza -l --icons=auto --git --header";
@@ -58,31 +58,36 @@
     lls = "eza -l --sort=size --icons=auto --git"; # Sort by size
   };
 
-  lazyGitAliases = lib.optionalAttrs mus.lazygit.enable {
+  lazyGitAliases = lib.optionalAttrs cfg.lazygit.enable {
     # Git workflow
     lg = "lazygit"; # Visual git interface
   };
 
-  zellijAliases = lib.optionalAttrs mus.zellij.enable {
+  zellijAliases = lib.optionalAttrs cfg.zellij.enable {
     # Terminal multiplexing
     zj = "zellij"; # Start zellij
     zj-attach = "zellij attach"; # Attach to session
     zj-list = "zellij list-sessions"; # List sessions
   };
 
-  payRespectsAliases = lib.optionalAttrs mus.payRespects.enable {
+  payRespectsAliases = lib.optionalAttrs cfg.payRespects.enable {
     # Utilities
     f = "eval \"$(pay-respects bash)\"";
   };
 
+  fastFetchAliases = lib.optionalAttrs config.my.user.dotfiles.fastfetch.enable {
+    ff = "fastfetch";
+  };
+
   mergedAliases =
     defaultAliases
-    // mus.shellAliases
+    // cfg.shellAliases
     // ezaAliases
     // nixhelpersAliases
     // lazyGitAliases
     // zellijAliases
-    // payRespectsAliases;
+    // payRespectsAliases
+    // fastFetchAliases;
 in {
   options.my.user.shell = {
     enable = lib.mkEnableOption "Enable shell configuration";
@@ -138,19 +143,19 @@ in {
     };
   };
 
-  config = lib.mkIf mus.enable {
+  config = lib.mkIf cfg.enable {
     home.packages = with pkgs;
       []
-      ++ lib.optional mus.eza.enable eza
-      ++ lib.optional mus.zellij.enable zellij
-      ++ lib.optional mus.payRespects.enable pay-respects
-      ++ lib.optional mus.lazygit.enable lazygit
-      ++ lib.optional mus.zoxide.enable zoxide;
+      ++ lib.optional cfg.eza.enable eza
+      ++ lib.optional cfg.zellij.enable zellij
+      ++ lib.optional cfg.payRespects.enable pay-respects
+      ++ lib.optional cfg.lazygit.enable lazygit
+      ++ lib.optional cfg.zoxide.enable zoxide;
 
-    programs.bash = lib.mkIf (mus.shellType == "bash") {
+    programs.bash = lib.mkIf (cfg.shellType == "bash") {
       enable = true;
 
-      enableCompletion = mus.bash.enableCompletion;
+      enableCompletion = cfg.bash.enableCompletion;
 
       profileExtra = ''[ -f ~/.bashrc ] && . ~/.bashrc'';
 
@@ -163,25 +168,58 @@ in {
       shellAliases = mergedAliases;
     };
 
-    programs.zsh = lib.mkIf (mus.shellType == "zsh") {
+    programs.zsh = lib.mkIf (cfg.shellType == "zsh") {
       enable = true;
 
-      enableCompletion = mus.zsh.enableCompletion;
-      autosuggestion.enable = mus.zsh.enableAutosuggestions;
-      syntaxHighlighting.enable = mus.zsh.enableSyntaxHighlighting;
+      enableCompletion = cfg.zsh.enableCompletion;
+      autosuggestion.enable = cfg.zsh.enableAutosuggestions;
+      syntaxHighlighting = {
+        enable = cfg.zsh.enableSyntaxHighlighting;
+        # Optimize syntax highlighting for performance
+        highlighters = ["main"]; # Only use main highlighter, skip brackets/pattern/cursor
+      };
+
+      # Use completion cache to speed up compinit
+      completionInit = ''
+        autoload -Uz compinit
+        # Only regenerate compdump once a day
+        if [[ -n ~/.zcompdump(#qNmh+24) ]]; then
+          compinit
+        else
+          compinit -C
+        fi
+      '';
 
       shellAliases = mergedAliases;
 
+      # Load heavy tools asynchronously where possible
       initContent = ''
-        # show fastfetch only in interactive terminals
-        [[ $- == *i* ]] && command -v fastfetch >/dev/null && fastfetch
+        # show fastfetch only in login shells, not every shell
+        if [[ -o login ]] && command -v fastfetch >/dev/null; then
+          fastfetch
+        fi
+
+        # Set history options for better performance
+        setopt HIST_FCNTL_LOCK
+        setopt HIST_IGNORE_DUPS
+        setopt SHARE_HISTORY
       '';
+
+      history = {
+        size = 10000;
+        save = 10000;
+        path = "$HOME/.zsh_history";
+        ignoreAllDups = false;
+        ignoreDups = true;
+        ignoreSpace = true;
+        share = true;
+      };
     };
 
-    programs.zoxide = lib.mkIf mus.zoxide.enable {
+    programs.zoxide = lib.mkIf cfg.zoxide.enable {
       enable = true;
-      enableBashIntegration = mus.shellType == "bash";
-      enableZshIntegration = mus.shellType == "zsh";
+      enableBashIntegration = cfg.shellType == "bash";
+      enableZshIntegration = cfg.shellType == "zsh";
     };
   };
 }

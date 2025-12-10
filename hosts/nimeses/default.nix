@@ -13,6 +13,7 @@
     ../../modules/system/host
     ../../modules/system/niri
     ../../modules/system/shell
+    ../../modules/system/performance
   ];
 
   # these modules are found unser /modules/system/
@@ -74,6 +75,12 @@
         enable = true;
         nix-ld.enable = true;
         garbageCollector.enable = true;
+      };
+
+      performance = {
+        enable = true;
+        cpuGovernor = "schedutil"; # Balanced performance/battery
+        swappiness = 10; # Reduce aggressive swapping (you have 30GB RAM)
       };
     };
 
