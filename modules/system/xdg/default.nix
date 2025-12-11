@@ -20,45 +20,56 @@ in {
         yazi
       ];
 
-    home-manager.users.${config.my.system.host.userName}.home.packages = with pkgs;
-      lib.optionals cfg.terminal-filechooser.enable [
-        xdg-desktop-portal-termfilechooser
-        xdg-terminal-exec
+    home-manager.users.${config.my.system.host.userName} = lib.mkIf cfg.terminal-filechooser.enable {
+      home.packages = [
+        pkgs.xdg-desktop-portal-termfilechooser
+        pkgs.xdg-terminal-exec
       ];
 
-    environment.etc."xdg/xdg-desktop-portal-termfilechooser/config".text = lib.mkIf cfg.terminal-filechooser.enable ''
-      [filechooser]
-      cmd=${pkgs.writeShellScript "yazi-filechooser.sh" ''
-        set -e
-        multiple="$1"
-        directory="$2"
-        save="$3"
-        path="$4"
-        out="$5"
+      xdg.configFile."xdg-desktop-portal-termfilechooser/yazi-wrapper.sh" = {
+        executable = true;
+        text = ''
+          #!${pkgs.bash}/bin/bash
+          set -e
+          multiple="$1"
+          directory="$2"
+          save="$3"
+          path="$4"
+          out="$5"
 
-        if [ "$save" = "1" ]; then
-          exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" "$path"
-        elif [ "$directory" = "1" ]; then
-          exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" --cwd-file="$out.1" "$path"
-        elif [ "$multiple" = "1" ]; then
-          exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" "$path"
-        else
-          exec ghostty --title=termfilechooser -e yazi --chooser-file="$out" "$path"
-        fi
-      ''}
-    '';
+          # Use current directory if path is empty
+          if [ -z "$path" ]; then
+            path="."
+          fi
+
+          if [ "$save" = "1" ]; then
+            exec ${pkgs.ghostty}/bin/ghostty --title=termfilechooser -e ${pkgs.yazi}/bin/yazi --chooser-file="$out" "$path"
+          elif [ "$directory" = "1" ]; then
+            exec ${pkgs.ghostty}/bin/ghostty --title=termfilechooser -e ${pkgs.yazi}/bin/yazi --chooser-file="$out" --cwd-file="$out.1" "$path"
+          elif [ "$multiple" = "1" ]; then
+            exec ${pkgs.ghostty}/bin/ghostty --title=termfilechooser -e ${pkgs.yazi}/bin/yazi --chooser-file="$out" "$path"
+          else
+            exec ${pkgs.ghostty}/bin/ghostty --title=termfilechooser -e ${pkgs.yazi}/bin/yazi --chooser-file="$out" "$path"
+          fi
+        '';
+      };
+
+      xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
+        [filechooser]
+        cmd=/home/${config.my.system.host.userName}/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
+      '';
+    };
 
     xdg.portal = {
       enable = cfg.enable;
 
       # Use regular packages, not override, to ensure they're in user profile
-      extraPortals = with pkgs;
+      extraPortals =
         [
-          xdg-desktop-portal-gtk
+          pkgs.xdg-desktop-portal-gtk
         ]
-        ++ lib.optional config.my.system.niri.enable xdg-desktop-portal-gnome
-        ++ lib.optional config.my.system.hyprland.enable xdg-desktop-portal-hyprland
-        ++ lib.optional cfg.terminal-filechooser.enable xdg-desktop-portal-termfilechooser;
+        ++ lib.optional config.my.system.niri.enable pkgs.xdg-desktop-portal-gnome
+        ++ lib.optional config.my.system.hyprland.enable pkgs.xdg-desktop-portal-hyprland;
 
       config = {
         common =

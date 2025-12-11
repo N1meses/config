@@ -64,6 +64,50 @@ in {
       default = ["ntfs3"];
       description = "List of additionally supported filesystems.";
     };
+
+    luks = lib.mkOption {
+      type = lib.types.submodule {
+        options = {
+          enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Enable LUKS encryption support in initrd";
+          };
+
+          devices = lib.mkOption {
+            type = with lib.types; attrsOf (submodule {
+              options = {
+                device = lib.mkOption {
+                  type = str;
+                  description = "Path to the encrypted device (e.g., /dev/disk/by-uuid/...)";
+                };
+
+                keyFile = lib.mkOption {
+                  type = nullOr str;
+                  default = null;
+                  description = "Path to key file for automatic unlocking (stored on /boot)";
+                };
+
+                keyFileSize = lib.mkOption {
+                  type = nullOr int;
+                  default = null;
+                  description = "Size of the key file in bytes";
+                };
+
+                allowDiscards = lib.mkOption {
+                  type = bool;
+                  default = false;
+                  description = "Enable TRIM/discard support for SSDs";
+                };
+              };
+            });
+            default = {};
+            description = "LUKS encrypted devices configuration";
+          };
+        };
+      };
+      default = {};
+    };
   };
 
   config = lib.mkMerge [
@@ -100,6 +144,15 @@ in {
         initrd.systemd.enable = true;
         initrd.verbose = false;
       };
+    })
+
+    (lib.mkIf (cfg.enable && cfg.luks.enable) {
+      boot.initrd.luks.devices = lib.mapAttrs (name: luksOpts: {
+        device = luksOpts.device;
+        keyFile = lib.mkIf (luksOpts.keyFile != null) luksOpts.keyFile;
+        keyFileSize = lib.mkIf (luksOpts.keyFileSize != null) luksOpts.keyFileSize;
+        allowDiscards = luksOpts.allowDiscards;
+      }) cfg.luks.devices;
     })
   ];
 }

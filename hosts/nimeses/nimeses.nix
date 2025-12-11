@@ -101,7 +101,7 @@
         defaultEditor = "helix";
 
         vscode.enable = true;
-        nixvim.enable = true;
+        nixvim.enable = false;
         helix = {
           enable = true;
           theme = "nox-default";
